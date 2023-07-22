@@ -30,12 +30,8 @@ const Lottery = () => {
         }, 3000); // Change this value to adjust the delay (in milliseconds)
       };
 
-      const generateRandomNumbers = () => {
         const newRandomNumber1 = Math.floor(Math.random() * 10); // Generates a random number between 1 and 100
         const newRandomNumber2 = Math.floor(Math.random() * 10);
-        setRandomNumber1(newRandomNumber1);
-        setRandomNumber2(newRandomNumber2);
-      };
     
       // Call the function to start the timer when the component mounts
       // You can also call this function based on some user interaction (e.g., button click)
@@ -58,8 +54,8 @@ const Lottery = () => {
                 )}
 
              {displayImage && (<RandomImgWrapper>
-                <RandomImg src = {require(`../../assets/5.png`)} />
-                <RandomImg src = {require(`../../assets/1.png`)} />
+                <RandomImg src = {require(`../../assets/${newRandomNumber1}.png`)} />
+                <RandomImg src = {require(`../../assets/${newRandomNumber2}.png`)} />
                 </RandomImgWrapper>
              )}
             </FrameWrapper>
