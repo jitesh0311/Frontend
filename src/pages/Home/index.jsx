@@ -4,6 +4,7 @@ import Header from '../../components/Header'
 import Hero from '../../views/Hero'
 import Table from '../../views/Table'
 import Card from '../../views/Card'
+import Lottery from '../../views/Lottery'
 
 
 const Home = () => {
@@ -20,7 +21,8 @@ const Home = () => {
         <Header/>
         <Hero/>
         <Card />
-        <Table/>
+        {/* <Table/> */}
+        <Lottery />
     </Container>
   )
 }
