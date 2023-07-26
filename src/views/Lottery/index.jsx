@@ -22,8 +22,7 @@ const Lottery = () => {
   const [randomNumber1, setRandomNumber1] = useState(null);
   const [randomNumber2, setRandomNumber2] = useState(null);
   const [combinedNumber, setCombinedNumber] = useState(null);
-  const [lotteryActive, setLotteryActive] = useState(true);
-  const [allRandomNumbers, setAllRandomNumbers] = useState([]);
+  const [lastGeneratedTime, setLastGeneratedTime] = useState(0);
 
   // Function to generate a new random number between 0 and 9
   const generateRandomNumber = () => {
@@ -52,81 +51,68 @@ const Lottery = () => {
     }
   };
 
-  // Function to update all random numbers to the Firebase database
-  const updateAllRandomNumbersToDB = (numbers) => {
+  // Function to push the new combined number to the Firebase database
+  const pushCombinedNumberToDB = (number) => {
     try {
-      set(ref(db, "allRandomNumbers"), numbers);
+      push(ref(db, "allRandomNumbers"), number);
     } catch (error) {
-      console.error(
-        "Error updating all random numbers to the database:",
-        error
-      );
+      console.error("Error pushing combined number to the database:", error);
     }
   };
 
-  // Function to save the last generated number to local storage
-  const saveLastGeneratedNumber = (number) => {
-    localStorage.setItem("lastGeneratedNumber", number.toString());
-  };
-
-  // Function to check if one minute has passed since the last generated number
-  const hasOneMinutePassed = () => {
-    const lastGeneratedNumber = localStorage.getItem("lastGeneratedNumber");
-    if (!lastGeneratedNumber) return true;
-
-    const currentTime = new Date().getTime();
-    const lastGeneratedTime = parseInt(lastGeneratedNumber, 10);
-    return currentTime - lastGeneratedTime >= 60000;
-  };
-
-  useEffect(() => {
-    // Fetch the last generated number from local storage
-    const lastGeneratedNumber = localStorage.getItem("lastGeneratedNumber");
-    if (lastGeneratedNumber) {
-      const lastNumber = parseInt(lastGeneratedNumber, 10);
-      setCombinedNumber(lastNumber);
+  // Function to fetch the last generated number from the Firebase database
+  const fetchLastGeneratedNumberFromDB = async () => {
+    try {
+      const snapshot = await get(ref(db, "combinedNumber"));
+      if (snapshot.exists()) {
+        const combinedNumberFromDB = snapshot.val();
+        setCombinedNumber(combinedNumberFromDB);
+        const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB);
+        setRandomNumber1(digit1);
+        setRandomNumber2(digit2);
+      }
+    } catch (error) {
+      console.error("Error fetching combined number from the database:", error);
     }
-  }, []);
+  };
+
+  // Function to generate new numbers and combine them
+  const generateNewNumbers = () => {
+    const newRandomNumber1 = generateRandomNumber();
+    const newRandomNumber2 = generateRandomNumber();
+    setRandomNumber1(newRandomNumber1);
+    setRandomNumber2(newRandomNumber2);
+    const newCombinedNumber = combineNumbers(
+      newRandomNumber1,
+      newRandomNumber2
+    );
+
+    // Update the combined number to the database
+    updateCombinedNumberToDB(newCombinedNumber);
+
+    // Push the new combined number to the array of all random numbers in the database
+    pushCombinedNumberToDB(newCombinedNumber);
+
+    // Save the current time as the last generated time
+    setLastGeneratedTime(new Date().getTime());
+  };
 
   useEffect(() => {
-    // Generate new random numbers and combine them every 1 minute
-    const generateNewNumbers = () => {
-      const newRandomNumber1 = generateRandomNumber();
-      const newRandomNumber2 = generateRandomNumber();
-      setRandomNumber1(newRandomNumber1);
-      setRandomNumber2(newRandomNumber2);
-      const newCombinedNumber = combineNumbers(
-        newRandomNumber1,
-        newRandomNumber2
-      );
+    // Fetch the last generated number from the database
+    fetchLastGeneratedNumberFromDB();
 
-      // Update the combined number to the database
-      updateCombinedNumberToDB(newCombinedNumber);
-
-      // Add the new combined number to the array of all random numbers
-      setAllRandomNumbers((prevRandomNumbers) => [
-        ...prevRandomNumbers,
-        newCombinedNumber,
-      ]);
-
-      // Save the last generated number to local storage
-      saveLastGeneratedNumber(newCombinedNumber);
-    };
-
-    // Generate new numbers initially
-    generateNewNumbers();
-
-    // Set up the interval to generate new numbers every 1 minute
+    // Set up the interval to generate new numbers every 10 seconds
     const interval = setInterval(() => {
-      // Check if one minute has passed since the last generated number
-      if (hasOneMinutePassed()) {
+      // Check if 10 seconds have passed since the last generated number
+      const currentTime = new Date().getTime();
+      if (currentTime - lastGeneratedTime >= 10000) {
         generateNewNumbers();
       }
     }, 10000);
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
-  }, []);
+  }, [lastGeneratedTime]);
 
   useEffect(() => {
     // This effect will run once when the component mounts
@@ -147,45 +133,8 @@ const Lottery = () => {
   };
 
   // Call the function to start the timer when the component mounts
-  // You can also call this function based on some user interaction (e.g., button click)
-  // For simplicity, we'll call it on component mount in this example
   useEffect(() => {
     showImageAfterDelay();
-  }, []);
-
-  // Fetch the combined number from Firebase and split it
-  useEffect(() => {
-    const getCombinedNumberFromDB = async () => {
-      try {
-        const snapshot = await get(ref(db, "combinedNumber"));
-        if (snapshot.exists()) {
-          const combinedNumberFromDB = snapshot.val();
-          // Split the combined number into two digits
-          const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB);
-          setRandomNumber1(digit1);
-          setRandomNumber2(digit2);
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching combined number from the database:",
-          error
-        );
-      }
-    };
-
-    // Show the rollup and rolldown images before fetching the combined number
-    setShowImage(true);
-    setDisplayImage(false);
-
-    // Wait for 2 seconds, then fetch the combined number and show the random number images
-    const timer = setTimeout(() => {
-      getCombinedNumberFromDB();
-      setDisplayImage(true);
-      setShowImage(false);
-    }, 2000);
-
-    // Clean up the timer when the component unmounts
-    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -200,7 +149,7 @@ const Lottery = () => {
             </RollWrapper>
           )}
 
-          {displayImage && lotteryActive && (
+          {displayImage && (
             <RandomImgWrapper>
               {/* Display the first digit of the combined number as an image */}
               {randomNumber1 !== null &&
