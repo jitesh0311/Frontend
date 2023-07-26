@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import Header from '../../components/Header'
 import Hero from '../../views/Hero'
-import Table from '../../views/Table'
 import Card from '../../views/Card'
 import Lottery from '../../views/Lottery'
 
@@ -21,7 +20,6 @@ const Home = () => {
         <Header/>
         <Hero/>
         <Card />
-        {/* <Table/> */}
         <Lottery />
     </Container>
   )
