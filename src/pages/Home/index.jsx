@@ -4,6 +4,7 @@ import Header from '../../components/Header'
 import Hero from '../../views/Hero'
 import Card from '../../views/Card'
 import Lottery from '../../views/Lottery'
+import Table from '../../views/Table'
 
 
 const Home = () => {
@@ -17,10 +18,11 @@ const Home = () => {
   `
   return (
     <Container>
-        <Header/>
-        <Hero/>
-        <Card />
+        {/* <Header/> */}
+        {/* <Hero/> */}
+        {/* <Card /> */}
         <Lottery />
+        <Table />
     </Container>
   )
 }

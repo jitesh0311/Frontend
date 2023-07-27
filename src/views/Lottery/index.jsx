@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ref, set, get, push } from "firebase/database";
+import { ref, onValue, push, get, child } from "firebase/database";
 import { db } from "../../utils/firebase";
 import {
   Frame,
@@ -15,18 +15,47 @@ import {
 import ResultFrame from "../../assets/frame.jpg";
 import RollUpImg from "../../assets/rollup.gif";
 import RollDownImg from "../../assets/rolldown.gif";
+import Table from "../Table";
 
 const Lottery = () => {
   const [showImage, setShowImage] = useState(true);
   const [displayImage, setDisplayImage] = useState(false);
+
+  // Existing state variables for random numbers and combined numbers
   const [randomNumber1, setRandomNumber1] = useState(null);
   const [randomNumber2, setRandomNumber2] = useState(null);
   const [randomNumber3, setRandomNumber3] = useState(null);
   const [randomNumber4, setRandomNumber4] = useState(null);
   const [combinedNumber1, setCombinedNumber1] = useState(null);
   const [combinedNumber2, setCombinedNumber2] = useState(null);
-  const [lastGeneratedTime, setLastGeneratedTime] = useState(0);
+  // State to hold fetched data from Firebase
+  const [firebaseData, setFirebaseData] = useState({
+    allRandomNumbers1: [],
+    allRandomNumbers2: [],
+  });
 
+  const fetchDataFromFirebase = async () => {
+    try {
+      const snapshot1 = await get(ref(db, "allRandomNumbers1"));
+      const snapshot2 = await get(ref(db, "allRandomNumbers2"));
+      if (snapshot1.exists()) {
+        const allRandomNumbers1 = Object.values(snapshot1.val());
+        setFirebaseData((prevData) => ({
+          ...prevData,
+          allRandomNumbers1,
+        }));
+      }
+      if (snapshot2.exists()) {
+        const allRandomNumbers2 = Object.values(snapshot2.val());
+        setFirebaseData((prevData) => ({
+          ...prevData,
+          allRandomNumbers2,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching data from the database:", error);
+    }
+  };
   // Function to generate a new random number between 0 and 9
   const generateRandomNumber = () => {
     return Math.floor(Math.random() * 10);
@@ -45,37 +74,26 @@ const Lottery = () => {
     return { digit1, digit2 };
   };
 
-  // Function to update the combined number in the Firebase database
-  const updateCombinedNumber1ToDB = (number) => {
-    try {
-      set(ref(db, "combinedNumber1"), number);
-    } catch (error) {
-      console.error("Error updating combined number 1 to the database:", error);
-    }
-  };
-
-  // Function to update the combined number in the Firebase database
-  const updateCombinedNumber2ToDB = (number) => {
-    try {
-      set(ref(db, "combinedNumber2"), number);
-    } catch (error) {
-      console.error("Error updating combined number 2 to the database:", error);
-    }
-  };
-
-  // Function to push the new combined number to the Firebase database
+  // Function to push the new combined number with timestamp to the Firebase database
   const pushCombinedNumber1ToDB = (number) => {
     try {
-      push(ref(db, "allRandomNumbers1"), number);
+      const timestamp = new Date().toISOString();
+      push(ref(db, "allRandomNumbers1"), { number, timestamp });
     } catch (error) {
       console.error("Error pushing combined number 1 to the database:", error);
     }
   };
 
-  // Function to push the new combined number to the Firebase database
+  const setLastGeneratedTime = (time) => {
+    // Implement the logic to save the time to the database or do other actions if needed.
+    console.log("Last generated time:", time);
+  };
+
+  // Function to push the new combined number with timestamp to the Firebase database
   const pushCombinedNumber2ToDB = (number) => {
     try {
-      push(ref(db, "allRandomNumbers2"), number);
+      const timestamp = new Date().toISOString();
+      push(ref(db, "allRandomNumbers2"), { number, timestamp });
     } catch (error) {
       console.error("Error pushing combined number 2 to the database:", error);
     }
@@ -84,19 +102,27 @@ const Lottery = () => {
   // Function to fetch the last generated numbers from the Firebase database
   const fetchLastGeneratedNumbersFromDB = async () => {
     try {
-      const snapshot1 = await get(ref(db, "combinedNumber1"));
-      const snapshot2 = await get(ref(db, "combinedNumber2"));
+      const snapshot1 = await get(ref(db, "allRandomNumbers1"));
+      const snapshot2 = await get(ref(db, "allRandomNumbers2"));
       if (snapshot1.exists()) {
-        const combinedNumberFromDB1 = snapshot1.val();
-        setCombinedNumber1(combinedNumberFromDB1);
-        const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB1);
+        const allRandomNumbers1 = Object.values(snapshot1.val());
+        const lastGeneratedNumber1 =
+          allRandomNumbers1[allRandomNumbers1.length - 1];
+        setCombinedNumber1(lastGeneratedNumber1.number);
+        const { digit1, digit2 } = splitCombinedNumber(
+          lastGeneratedNumber1.number
+        );
         setRandomNumber1(digit1);
         setRandomNumber2(digit2);
       }
       if (snapshot2.exists()) {
-        const combinedNumberFromDB2 = snapshot2.val();
-        setCombinedNumber2(combinedNumberFromDB2);
-        const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB2);
+        const allRandomNumbers2 = Object.values(snapshot2.val());
+        const lastGeneratedNumber2 =
+          allRandomNumbers2[allRandomNumbers2.length - 1];
+        setCombinedNumber2(lastGeneratedNumber2.number);
+        const { digit1, digit2 } = splitCombinedNumber(
+          lastGeneratedNumber2.number
+        );
         setRandomNumber3(digit1);
         setRandomNumber4(digit2);
       }
@@ -130,10 +156,6 @@ const Lottery = () => {
     );
 
     // Update the combined numbers to the database
-    updateCombinedNumber1ToDB(newCombinedNumber1);
-    updateCombinedNumber2ToDB(newCombinedNumber2);
-
-    // Push the new combined numbers to the array of all random numbers in the database
     pushCombinedNumber1ToDB(newCombinedNumber1);
     pushCombinedNumber2ToDB(newCombinedNumber2);
 
@@ -141,38 +163,19 @@ const Lottery = () => {
     setLastGeneratedTime(new Date().getTime());
   };
 
-  // Function to check if it's past 18:25 (6:25 PM)
-  const isPastEndTime = () => {
-    const now = new Date();
-    const endHour = 20; // 6 PM
-    const endMinute = 2; // 25 minutes
-    return (
-      now.getHours() > endHour ||
-      (now.getHours() === endHour && now.getMinutes() >= endMinute)
-    );
-  };
-
   useEffect(() => {
     // Fetch the last generated numbers from the database
     fetchLastGeneratedNumbersFromDB();
+    fetchDataFromFirebase();
 
     // Set up the interval to generate new numbers every 1 minute
     const interval = setInterval(() => {
-      if (isPastEndTime()) {
-        clearInterval(interval); // Stop generating numbers after 18:25
-        return;
-      }
-
-      // Check if 1 minute has passed since the last generated numbers
-      const currentTime = new Date().getTime();
-      if (currentTime - lastGeneratedTime >= 10000) {
-        generateNewNumbers();
-      }
-    }, 10000);
+      generateNewNumbers();
+    }, 10000); // Change this value to 60000 for 1 minute
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
-  }, [lastGeneratedTime]);
+  }, []);
 
   useEffect(() => {
     // This effect will run once when the component mounts
@@ -264,6 +267,8 @@ const Lottery = () => {
           )}
         </FrameWrapper>
       </LotteryWrapper>
+      <Table tableData={firebaseData} />
+      {/* Display the table component */}
     </LotterySect>
   );
 };

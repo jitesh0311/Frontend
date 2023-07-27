@@ -6,14 +6,15 @@ export const LotterySect = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+  flex-direction: column;
+`;
 
 export const LotteryWrapper = styled.div`
   width: 100%;
   max-width: 1300px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center
 `
 
 export const FrameWrapper = styled.div`
