@@ -27,6 +27,8 @@ export const RollWrapper = styled.div`
   position: absolute;
   bottom: 160px;
   left: 110px;
+  display: flex;
+  gap:30px;
 `;
 export const RollUp = styled.img`
 `
