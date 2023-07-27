@@ -21,7 +21,10 @@ const Lottery = () => {
   const [displayImage, setDisplayImage] = useState(false);
   const [randomNumber1, setRandomNumber1] = useState(null);
   const [randomNumber2, setRandomNumber2] = useState(null);
-  const [combinedNumber, setCombinedNumber] = useState(null);
+  const [randomNumber3, setRandomNumber3] = useState(null);
+  const [randomNumber4, setRandomNumber4] = useState(null);
+  const [combinedNumber1, setCombinedNumber1] = useState(null);
+  const [combinedNumber2, setCombinedNumber2] = useState(null);
   const [lastGeneratedTime, setLastGeneratedTime] = useState(0);
 
   // Function to generate a new random number between 0 and 9
@@ -43,36 +46,65 @@ const Lottery = () => {
   };
 
   // Function to update the combined number in the Firebase database
-  const updateCombinedNumberToDB = (number) => {
+  const updateCombinedNumber1ToDB = (number) => {
     try {
-      set(ref(db, "combinedNumber"), number);
+      set(ref(db, "combinedNumber1"), number);
     } catch (error) {
-      console.error("Error updating combined number to the database:", error);
+      console.error("Error updating combined number 1 to the database:", error);
+    }
+  };
+
+  // Function to update the combined number in the Firebase database
+  const updateCombinedNumber2ToDB = (number) => {
+    try {
+      set(ref(db, "combinedNumber2"), number);
+    } catch (error) {
+      console.error("Error updating combined number 2 to the database:", error);
     }
   };
 
   // Function to push the new combined number to the Firebase database
-  const pushCombinedNumberToDB = (number) => {
+  const pushCombinedNumber1ToDB = (number) => {
     try {
-      push(ref(db, "allRandomNumbers"), number);
+      push(ref(db, "allRandomNumbers1"), number);
     } catch (error) {
-      console.error("Error pushing combined number to the database:", error);
+      console.error("Error pushing combined number 1 to the database:", error);
     }
   };
 
-  // Function to fetch the last generated number from the Firebase database
-  const fetchLastGeneratedNumberFromDB = async () => {
+  // Function to push the new combined number to the Firebase database
+  const pushCombinedNumber2ToDB = (number) => {
     try {
-      const snapshot = await get(ref(db, "combinedNumber"));
-      if (snapshot.exists()) {
-        const combinedNumberFromDB = snapshot.val();
-        setCombinedNumber(combinedNumberFromDB);
-        const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB);
+      push(ref(db, "allRandomNumbers2"), number);
+    } catch (error) {
+      console.error("Error pushing combined number 2 to the database:", error);
+    }
+  };
+
+  // Function to fetch the last generated numbers from the Firebase database
+  const fetchLastGeneratedNumbersFromDB = async () => {
+    try {
+      const snapshot1 = await get(ref(db, "combinedNumber1"));
+      const snapshot2 = await get(ref(db, "combinedNumber2"));
+      if (snapshot1.exists()) {
+        const combinedNumberFromDB1 = snapshot1.val();
+        setCombinedNumber1(combinedNumberFromDB1);
+        const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB1);
         setRandomNumber1(digit1);
         setRandomNumber2(digit2);
       }
+      if (snapshot2.exists()) {
+        const combinedNumberFromDB2 = snapshot2.val();
+        setCombinedNumber2(combinedNumberFromDB2);
+        const { digit1, digit2 } = splitCombinedNumber(combinedNumberFromDB2);
+        setRandomNumber3(digit1);
+        setRandomNumber4(digit2);
+      }
     } catch (error) {
-      console.error("Error fetching combined number from the database:", error);
+      console.error(
+        "Error fetching combined numbers from the database:",
+        error
+      );
     }
   };
 
@@ -80,35 +112,47 @@ const Lottery = () => {
   const generateNewNumbers = () => {
     const newRandomNumber1 = generateRandomNumber();
     const newRandomNumber2 = generateRandomNumber();
+    const newRandomNumber3 = generateRandomNumber();
+    const newRandomNumber4 = generateRandomNumber();
+
     setRandomNumber1(newRandomNumber1);
     setRandomNumber2(newRandomNumber2);
-    const newCombinedNumber = combineNumbers(
+    setRandomNumber3(newRandomNumber3);
+    setRandomNumber4(newRandomNumber4);
+
+    const newCombinedNumber1 = combineNumbers(
       newRandomNumber1,
       newRandomNumber2
     );
+    const newCombinedNumber2 = combineNumbers(
+      newRandomNumber3,
+      newRandomNumber4
+    );
 
-    // Update the combined number to the database
-    updateCombinedNumberToDB(newCombinedNumber);
+    // Update the combined numbers to the database
+    updateCombinedNumber1ToDB(newCombinedNumber1);
+    updateCombinedNumber2ToDB(newCombinedNumber2);
 
-    // Push the new combined number to the array of all random numbers in the database
-    pushCombinedNumberToDB(newCombinedNumber);
+    // Push the new combined numbers to the array of all random numbers in the database
+    pushCombinedNumber1ToDB(newCombinedNumber1);
+    pushCombinedNumber2ToDB(newCombinedNumber2);
 
     // Save the current time as the last generated time
     setLastGeneratedTime(new Date().getTime());
   };
 
   useEffect(() => {
-    // Fetch the last generated number from the database
-    fetchLastGeneratedNumberFromDB();
+    // Fetch the last generated numbers from the database
+    fetchLastGeneratedNumbersFromDB();
 
-    // Set up the interval to generate new numbers every 10 seconds
+    // Set up the interval to generate new numbers every 1 minute
     const interval = setInterval(() => {
-      // Check if 10 seconds have passed since the last generated number
+      // Check if 1 minute has passed since the last generated numbers
       const currentTime = new Date().getTime();
-      if (currentTime - lastGeneratedTime >= 10000) {
+      if (currentTime - lastGeneratedTime >= 60000) {
         generateNewNumbers();
       }
-    }, 10000);
+    }, 60000);
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
@@ -146,12 +190,14 @@ const Lottery = () => {
             <RollWrapper>
               <RollUp src={RollUpImg} />
               <RollDown src={RollDownImg} />
+              <RollUp src={RollUpImg} />
+              <RollDown src={RollDownImg} />
             </RollWrapper>
           )}
 
           {displayImage && (
             <RandomImgWrapper>
-              {/* Display the first digit of the combined number as an image */}
+              {/* Display the first digit of the combined number 1 as an image */}
               {randomNumber1 !== null &&
               randomNumber1 >= 0 &&
               randomNumber1 <= 9 ? (
@@ -163,13 +209,37 @@ const Lottery = () => {
                 <p>Image not found</p>
               )}
 
-              {/* Display the second digit of the combined number as an image */}
+              {/* Display the second digit of the combined number 1 as an image */}
               {randomNumber2 !== null &&
               randomNumber2 >= 0 &&
               randomNumber2 <= 9 ? (
                 <RandomImg
                   src={require(`../../assets/${randomNumber2}.png`)}
                   alt={`Random Number ${randomNumber2}`}
+                />
+              ) : (
+                <p>Image not found</p>
+              )}
+
+              {/* Display the first digit of the combined number 2 as an image */}
+              {randomNumber3 !== null &&
+              randomNumber3 >= 0 &&
+              randomNumber3 <= 9 ? (
+                <RandomImg
+                  src={require(`../../assets/${randomNumber3}.png`)}
+                  alt={`Random Number ${randomNumber3}`}
+                />
+              ) : (
+                <p>Image not found</p>
+              )}
+
+              {/* Display the second digit of the combined number 2 as an image */}
+              {randomNumber4 !== null &&
+              randomNumber4 >= 0 &&
+              randomNumber4 <= 9 ? (
+                <RandomImg
+                  src={require(`../../assets/${randomNumber4}.png`)}
+                  alt={`Random Number ${randomNumber4}`}
                 />
               ) : (
                 <p>Image not found</p>

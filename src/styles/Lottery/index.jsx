@@ -21,13 +21,13 @@ export const FrameWrapper = styled.div`
 `
 
 export const Frame = styled.img`
-  width: 400px;
+  width: 600px;
 `
 export const RollWrapper = styled.div`
   position: absolute;
-  bottom:90px;
-  left:110px;
-`
+  bottom: 160px;
+  left: 110px;
+`;
 export const RollUp = styled.img`
 `
 
@@ -37,7 +37,7 @@ export const RollDown = styled.img`
 
 export const RandomImgWrapper = styled.div`
   position: absolute;
-  bottom:90px;
+  bottom:160px;
   left:110px;
   display: flex;
   gap:30px;
