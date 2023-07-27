@@ -29,6 +29,8 @@ const Table = ({ tableData }) => {
         <ResultTable>
           <TableHeading>
             <TableRow>
+              <ColumnNames>Date</ColumnNames>
+              <ColumnNames>Time</ColumnNames>
               <ColumnNames>Result1</ColumnNames>
               <ColumnNames>Result2</ColumnNames>
             </TableRow>
@@ -38,6 +40,8 @@ const Table = ({ tableData }) => {
             {/* Display the data from allRandomNumbers1 and allRandomNumbers2 */}
             {allRandomNumbers1.map((data1, index) => (
               <TableRow key={`resultRow_${index}`}>
+                <TableData>{String(data1.date)}</TableData>
+                <TableData>{String(data1.time)}</TableData>
                 <TableData>{data1.number}</TableData>
                 {allRandomNumbers2[index] ? (
                   <TableData>{allRandomNumbers2[index].number}</TableData>

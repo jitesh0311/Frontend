@@ -34,33 +34,39 @@ const Lottery = () => {
     allRandomNumbers2: [],
   });
 
-  const fetchDataFromFirebase = () => {
-    try {
-      // Listen for changes to allRandomNumbers1
-      onValue(ref(db, "allRandomNumbers1"), (snapshot) => {
-        if (snapshot.exists()) {
-          const allRandomNumbers1 = Object.values(snapshot.val());
-          setFirebaseData((prevData) => ({
-            ...prevData,
-            allRandomNumbers1,
-          }));
-        }
-      });
+ const fetchDataFromFirebase = () => {
+   try {
+     const unsubscribe1 = onValue(ref(db, "allRandomNumbers1"), (snapshot) => {
+       if (snapshot.exists()) {
+         const allRandomNumbers1 = Object.values(snapshot.val());
+         setFirebaseData((prevData) => ({
+           ...prevData,
+           allRandomNumbers1,
+         }));
+       }
+     });
 
-      // Listen for changes to allRandomNumbers2
-      onValue(ref(db, "allRandomNumbers2"), (snapshot) => {
-        if (snapshot.exists()) {
-          const allRandomNumbers2 = Object.values(snapshot.val());
-          setFirebaseData((prevData) => ({
-            ...prevData,
-            allRandomNumbers2,
-          }));
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching data from the database:", error);
-    }
-  };
+     const unsubscribe2 = onValue(ref(db, "allRandomNumbers2"), (snapshot) => {
+       if (snapshot.exists()) {
+         const allRandomNumbers2 = Object.values(snapshot.val());
+         setFirebaseData((prevData) => ({
+           ...prevData,
+           allRandomNumbers2,
+         }));
+       }
+     });
+
+     return () => {
+       // Clean up the subscriptions when the component unmounts
+       unsubscribe1();
+       unsubscribe2();
+     };
+   } catch (error) {
+     console.error("Error fetching data from the database:", error);
+   }
+ };
+
+
 
   // Function to generate a new random number between 0 and 9
   const generateRandomNumber = () => {
@@ -84,26 +90,29 @@ const Lottery = () => {
   const pushCombinedNumber1ToDB = (number) => {
     try {
       const timestamp = new Date().toISOString();
-      push(ref(db, "allRandomNumbers1"), { number, timestamp });
+      const time = new Date().toLocaleTimeString();
+      const date = new Date().toLocaleDateString(); // Get the current date as a string
+      push(ref(db, "allRandomNumbers1"), { number, timestamp, time, date });
     } catch (error) {
       console.error("Error pushing combined number 1 to the database:", error);
     }
   };
-
   const setLastGeneratedTime = (time) => {
     // Implement the logic to save the time to the database or do other actions if needed.
     console.log("Last generated time:", time);
   };
 
   // Function to push the new combined number with timestamp to the Firebase database
-  const pushCombinedNumber2ToDB = (number) => {
-    try {
-      const timestamp = new Date().toISOString();
-      push(ref(db, "allRandomNumbers2"), { number, timestamp });
-    } catch (error) {
-      console.error("Error pushing combined number 2 to the database:", error);
-    }
-  };
+ const pushCombinedNumber2ToDB = (number) => {
+   try {
+     const timestamp = new Date().toISOString();
+     const time = new Date().toLocaleTimeString();
+     const date = new Date().toLocaleDateString(); // Get the current date as a string
+     push(ref(db, "allRandomNumbers2"), { number, timestamp, time, date });
+   } catch (error) {
+     console.error("Error pushing combined number 2 to the database:", error);
+   }
+ };
 
   // Function to fetch the last generated numbers from the Firebase database
   const fetchLastGeneratedNumbersFromDB = async () => {
@@ -167,13 +176,12 @@ const Lottery = () => {
 
     // Save the current time as the last generated time
     setLastGeneratedTime(new Date().getTime());
-     fetchDataFromFirebase();
   };
 
   useEffect(() => {
     // Fetch the last generated numbers from the database
     fetchLastGeneratedNumbersFromDB();
-   
+    fetchDataFromFirebase();
 
     // Set up the interval to generate new numbers every 1 minute
     const interval = setInterval(() => {
