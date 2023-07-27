@@ -34,28 +34,34 @@ const Lottery = () => {
     allRandomNumbers2: [],
   });
 
-  const fetchDataFromFirebase = async () => {
+  const fetchDataFromFirebase = () => {
     try {
-      const snapshot1 = await get(ref(db, "allRandomNumbers1"));
-      const snapshot2 = await get(ref(db, "allRandomNumbers2"));
-      if (snapshot1.exists()) {
-        const allRandomNumbers1 = Object.values(snapshot1.val());
-        setFirebaseData((prevData) => ({
-          ...prevData,
-          allRandomNumbers1,
-        }));
-      }
-      if (snapshot2.exists()) {
-        const allRandomNumbers2 = Object.values(snapshot2.val());
-        setFirebaseData((prevData) => ({
-          ...prevData,
-          allRandomNumbers2,
-        }));
-      }
+      // Listen for changes to allRandomNumbers1
+      onValue(ref(db, "allRandomNumbers1"), (snapshot) => {
+        if (snapshot.exists()) {
+          const allRandomNumbers1 = Object.values(snapshot.val());
+          setFirebaseData((prevData) => ({
+            ...prevData,
+            allRandomNumbers1,
+          }));
+        }
+      });
+
+      // Listen for changes to allRandomNumbers2
+      onValue(ref(db, "allRandomNumbers2"), (snapshot) => {
+        if (snapshot.exists()) {
+          const allRandomNumbers2 = Object.values(snapshot.val());
+          setFirebaseData((prevData) => ({
+            ...prevData,
+            allRandomNumbers2,
+          }));
+        }
+      });
     } catch (error) {
       console.error("Error fetching data from the database:", error);
     }
   };
+
   // Function to generate a new random number between 0 and 9
   const generateRandomNumber = () => {
     return Math.floor(Math.random() * 10);
@@ -161,12 +167,13 @@ const Lottery = () => {
 
     // Save the current time as the last generated time
     setLastGeneratedTime(new Date().getTime());
+     fetchDataFromFirebase();
   };
 
   useEffect(() => {
     // Fetch the last generated numbers from the database
     fetchLastGeneratedNumbersFromDB();
-    fetchDataFromFirebase();
+   
 
     // Set up the interval to generate new numbers every 1 minute
     const interval = setInterval(() => {
