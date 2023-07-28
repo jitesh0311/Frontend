@@ -5,6 +5,7 @@ import Hero from '../../views/Hero'
 import Card from '../../views/Card'
 import Lottery from '../../views/Lottery'
 import Table from '../../views/Table'
+import Admin from '../../views/Admin'
 
 
 const Home = () => {
@@ -21,6 +22,7 @@ const Home = () => {
         {/* <Header/> */}
         {/* <Hero/> */}
         {/* <Card /> */}
+        {/* <Admin/> */}
         <Lottery />
         <Table />
     </Container>

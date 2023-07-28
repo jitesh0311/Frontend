@@ -34,39 +34,37 @@ const Lottery = () => {
     allRandomNumbers2: [],
   });
 
- const fetchDataFromFirebase = () => {
-   try {
-     const unsubscribe1 = onValue(ref(db, "allRandomNumbers1"), (snapshot) => {
-       if (snapshot.exists()) {
-         const allRandomNumbers1 = Object.values(snapshot.val());
-         setFirebaseData((prevData) => ({
-           ...prevData,
-           allRandomNumbers1,
-         }));
-       }
-     });
+  const fetchDataFromFirebase = () => {
+    try {
+      const unsubscribe1 = onValue(ref(db, "allRandomNumbers1"), (snapshot) => {
+        if (snapshot.exists()) {
+          const allRandomNumbers1 = Object.values(snapshot.val());
+          setFirebaseData((prevData) => ({
+            ...prevData,
+            allRandomNumbers1,
+          }));
+        }
+      });
 
-     const unsubscribe2 = onValue(ref(db, "allRandomNumbers2"), (snapshot) => {
-       if (snapshot.exists()) {
-         const allRandomNumbers2 = Object.values(snapshot.val());
-         setFirebaseData((prevData) => ({
-           ...prevData,
-           allRandomNumbers2,
-         }));
-       }
-     });
+      const unsubscribe2 = onValue(ref(db, "allRandomNumbers2"), (snapshot) => {
+        if (snapshot.exists()) {
+          const allRandomNumbers2 = Object.values(snapshot.val());
+          setFirebaseData((prevData) => ({
+            ...prevData,
+            allRandomNumbers2,
+          }));
+        }
+      });
 
-     return () => {
-       // Clean up the subscriptions when the component unmounts
-       unsubscribe1();
-       unsubscribe2();
-     };
-   } catch (error) {
-     console.error("Error fetching data from the database:", error);
-   }
- };
-
-
+      return () => {
+        // Clean up the subscriptions when the component unmounts
+        unsubscribe1();
+        unsubscribe2();
+      };
+    } catch (error) {
+      console.error("Error fetching data from the database:", error);
+    }
+  };
 
   // Function to generate a new random number between 0 and 9
   const generateRandomNumber = () => {
@@ -103,16 +101,16 @@ const Lottery = () => {
   };
 
   // Function to push the new combined number with timestamp to the Firebase database
- const pushCombinedNumber2ToDB = (number) => {
-   try {
-     const timestamp = new Date().toISOString();
-     const time = new Date().toLocaleTimeString();
-     const date = new Date().toLocaleDateString(); // Get the current date as a string
-     push(ref(db, "allRandomNumbers2"), { number, timestamp, time, date });
-   } catch (error) {
-     console.error("Error pushing combined number 2 to the database:", error);
-   }
- };
+  const pushCombinedNumber2ToDB = (number) => {
+    try {
+      const timestamp = new Date().toISOString();
+      const time = new Date().toLocaleTimeString();
+      const date = new Date().toLocaleDateString(); // Get the current date as a string
+      push(ref(db, "allRandomNumbers2"), { number, timestamp, time, date });
+    } catch (error) {
+      console.error("Error pushing combined number 2 to the database:", error);
+    }
+  };
 
   // Function to fetch the last generated numbers from the Firebase database
   const fetchLastGeneratedNumbersFromDB = async () => {
@@ -151,10 +149,19 @@ const Lottery = () => {
 
   // Function to generate new numbers and combine them
   const generateNewNumbers = () => {
+    const now = new Date();
+
+    // Stop generating numbers after 18:25 (6:25 PM)
+    if (now.getHours() === 13 && now.getMinutes() >= 44) {
+      console.log("Generatingnumbers stopped.");
+      return; // Exit the function and stop generating numbers
+    }
     const newRandomNumber1 = generateRandomNumber();
     const newRandomNumber2 = generateRandomNumber();
     const newRandomNumber3 = generateRandomNumber();
     const newRandomNumber4 = generateRandomNumber();
+
+    // Stop generating numbers after 18:25 (6:25 PM)
 
     setRandomNumber1(newRandomNumber1);
     setRandomNumber2(newRandomNumber2);
@@ -170,10 +177,14 @@ const Lottery = () => {
       newRandomNumber4
     );
 
-    // Update the combined numbers to the database
-    pushCombinedNumber1ToDB(newCombinedNumber1);
-    pushCombinedNumber2ToDB(newCombinedNumber2);
-
+    if (newCombinedNumber1 === newCombinedNumber2) {
+      // If they are the same, generate new numbers again
+      return generateNewNumbers();
+    } else {
+      // If they are different, update the combined numbers in the database
+      pushCombinedNumber1ToDB(newCombinedNumber1);
+      pushCombinedNumber2ToDB(newCombinedNumber2);
+    }
     // Save the current time as the last generated time
     setLastGeneratedTime(new Date().getTime());
   };
