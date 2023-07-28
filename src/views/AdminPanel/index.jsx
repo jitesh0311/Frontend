@@ -12,6 +12,7 @@ import {
   AdminSection,
   AdminWrap,
   DateLabel,
+  DateInput,
   SubmitButton,
   SubmitButtonWrap,
   TimeOption,
@@ -40,8 +41,22 @@ const AdminPanel = () => {
   };
   const timeOptions = generateTimeOptions();
 
-  const [selectedResult1, setSelectedResult1] = useState(null);
-  const [selectedResult2, setSelectedResult2] = useState(null);
+  const formatDate = (date) => {
+    const formattedDate = new Date(date);
+    const day = formattedDate.getDate();
+    const month = formattedDate.getMonth() + 1;
+    const year = formattedDate.getFullYear();
+
+    return `${String(month).padStart(2, )}/${String(day).padStart(
+      2,
+      "0"
+    )}/${year}`;
+  };
+
+  const [selectedResult1, setSelectedResult1] = useState("");
+  const [selectedResult2, setSelectedResult2] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   const handleResult1Change = (event) => {
     setSelectedResult1(event.target.value);
@@ -51,30 +66,47 @@ const AdminPanel = () => {
     setSelectedResult2(event.target.value);
   };
 
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const handleTimeChange = (event) => {
+    setSelectedTime(event.target.value);
+  };
+
   const handleSubmit = () => {
-    if (selectedResult1 !== null && selectedResult2 !== null) {
+    if (
+      selectedResult1 !== "" &&
+      selectedResult2 !== "" &&
+      selectedDate !== "" &&
+      selectedTime !== ""
+    ) {
       const timestamp = new Date().toISOString();
       const time = new Date().toLocaleTimeString();
-      const date = new Date().toLocaleDateString();
+
+      // Format the selected date
+      const formattedDate = formatDate(selectedDate);
 
       // Push the selected numbers and timestamp to the respective Firebase database references
       push(ref(db, "allRandomNumbers1"), {
         number: selectedResult1,
         timestamp,
         time,
-        date,
+        date: formattedDate, // Use the formatted date here
       });
 
       push(ref(db, "allRandomNumbers2"), {
         number: selectedResult2,
         timestamp,
         time,
-        date,
+        date: formattedDate, // Use the formatted date here
       });
 
-      // Reset the selected values to null
-      setSelectedResult1(null);
-      setSelectedResult2(null);
+      // Reset the selected values to empty strings
+      setSelectedResult1("");
+      setSelectedResult2("");
+      setSelectedDate("");
+      setSelectedTime("");
     }
   };
 
@@ -88,12 +120,33 @@ const AdminPanel = () => {
             </AdminHeadingWrapper>
             <AdminBottom>
               <AdminBottomLeft>
+                <DateLabel>Select a Date</DateLabel>
+                <DateInput
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                />
+              </AdminBottomLeft>
+              <AdminBottomLeft>
+                <DateLabel>Select Time</DateLabel>
+                <TimeSelect value={selectedTime} onChange={handleTimeChange}>
+                  <TimeOption disabled value="">
+                    Select
+                  </TimeOption>
+                  {timeOptions.map((time) => (
+                    <TimeOption key={time} value={time}>
+                      {time}
+                    </TimeOption>
+                  ))}
+                </TimeSelect>
+              </AdminBottomLeft>
+              <AdminBottomLeft>
                 <DateLabel>Result 1</DateLabel>
                 <TimeSelect
                   value={selectedResult1}
                   onChange={handleResult1Change}
                 >
-                  <TimeOption disabled selected>
+                  <TimeOption disabled value="">
                     Select
                   </TimeOption>
                   {numberOptions.map((number) => (
@@ -109,7 +162,7 @@ const AdminPanel = () => {
                   value={selectedResult2}
                   onChange={handleResult2Change}
                 >
-                  <TimeOption disabled selected>
+                  <TimeOption disabled value="">
                     Select
                   </TimeOption>
                   {numberOptions.map((number) => (
