@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { ref, push } from "firebase/database";
+import React, { useState, useEffect } from "react";
+import { ref, push, onValue, off } from "firebase/database";
 import { db } from "../../utils/firebase";
+import { useNavigate } from "react-router-dom";
 import {
-  Admin,
   AdminBottom,
   AdminBottomLeft,
   AdminForm,
@@ -39,6 +39,7 @@ const AdminPanel = () => {
 
     return timeOptions;
   };
+
   const timeOptions = generateTimeOptions();
 
   const formatDate = (date) => {
@@ -47,10 +48,7 @@ const AdminPanel = () => {
     const month = formattedDate.getMonth() + 1;
     const year = formattedDate.getFullYear();
 
-    return `${String(month).padStart(2, )}/${String(day).padStart(
-      2,
-      "0"
-    )}/${year}`;
+    return `${String(month).padStart(2, "0")}/${String(day).padStart(2, )}/${year}`;
   };
 
   const [selectedResult1, setSelectedResult1] = useState("");
@@ -87,19 +85,18 @@ const AdminPanel = () => {
       // Format the selected date
       const formattedDate = formatDate(selectedDate);
 
-      // Push the selected numbers and timestamp to the respective Firebase database references
+      // Push the selected numbers, timestamp, and time to the respective Firebase database references
       push(ref(db, "allRandomNumbers1"), {
         number: selectedResult1,
-        timestamp,
-        time,
-        date: formattedDate, // Use the formatted date here
+        date: formattedDate,
+        selectedTime, // Add the selected time to the data
       });
 
       push(ref(db, "allRandomNumbers2"), {
         number: selectedResult2,
-        timestamp,
-        time,
-        date: formattedDate, // Use the formatted date here
+
+        date: formattedDate,
+        selectedTime, // Add the selected time to the data
       });
 
       // Reset the selected values to empty strings
@@ -109,6 +106,28 @@ const AdminPanel = () => {
       setSelectedTime("");
     }
   };
+
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const selectedTimeRef = ref(db, "allRandomNumbers1");
+
+    const handleListen = (snapshot) => {
+      const data = snapshot.val();
+
+      // Process the data received from the database
+      // For example, you can update the state to display the numbers at the selected time
+      console.log(data); // Replace this with your logic
+    };
+
+    onValue(selectedTimeRef, handleListen);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      off(selectedTimeRef, handleListen);
+    };
+  }, []);
 
   return (
     <AdminSection>

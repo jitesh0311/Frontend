@@ -197,7 +197,7 @@ const Lottery = () => {
     // Set up the interval to generate new numbers every 1 minute
     const interval = setInterval(() => {
       generateNewNumbers();
-    }, 60000); // Change this value to 60000 for 1 minute
+    }, 900000); // Change this value to 60000 for 1 minute
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);

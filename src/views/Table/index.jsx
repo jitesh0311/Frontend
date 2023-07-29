@@ -41,7 +41,7 @@ const Table = ({ tableData }) => {
             {allRandomNumbers1.map((data1, index) => (
               <TableRow key={`resultRow_${index}`}>
                 <TableData>{String(data1.date)}</TableData>
-                <TableData>{String(data1.time)}</TableData>
+                <TableData>{String(data1.selectedTime)}</TableData>
                 <TableData>{data1.number}</TableData>
                 {allRandomNumbers2[index] ? (
                   <TableData>{allRandomNumbers2[index].number}</TableData>

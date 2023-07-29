@@ -6,6 +6,8 @@ import Card from '../../views/Card'
 import Lottery from '../../views/Lottery'
 import Table from '../../views/Table'
 import AdminPanel from '../../views/AdminPanel'
+import Login from '../../components/Login'
+
 
 
 
@@ -27,6 +29,7 @@ const Home = () => {
         <Lottery />
         <Table />
         <AdminPanel />
+       {/* <Login/> */}
     </Container>
   )
 }
