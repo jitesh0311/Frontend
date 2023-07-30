@@ -12,7 +12,7 @@ export const Nav = styled.div`
 
 export const NavWrapper = styled.div`
     width: 100%;
-    max-width: 1250px;
+    max-width: 1190px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -50,36 +50,19 @@ export const NavRight = styled.div`
     min-height: 80px;
 `
 
-export const CallResults = styled.a`
-    text-decoration: none;
-    color:black;
-    font-size: 30px;
-    position: relative;
-    &:hover{
-        color:red;
-    }
-    &:hover::before{
-        content : "";
-        position: absolute;
-        bottom:-2px;
-        width:100%;
-        max-width: 185px;
-        min-height: 3px;
-        background-color: black;
-    }
+export const CallResults = styled.button`
+  color: #fffefee6;
+  font-size: 20px;
+  background-color: transparent;
+  border: none;
+  /* background-color: #795bf5; */
+  position: relative;
+  padding: 9px;
+  border-radius: 25px;
+  /* border: 2px solid black; */
+  cursor: pointer;
 
-    @media (max-width:768px)
-    {
-        font-size: 26px;
-    }
-
-    @media (max-width:425px)
-    {
-        font-size: 20px;
-    }
-
-    @media (max-width:375px)
-    {
-        font-size: 16px;
-    }
-`
+  &:hover {
+    background-color: #967ff3;
+  }
+`;

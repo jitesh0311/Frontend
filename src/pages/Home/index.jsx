@@ -23,8 +23,8 @@ const Home = () => {
   `
   return (
     <Container>
-        {/* <Header/> */}
-        {/* <Hero/> */}
+        <Header/>
+        <Hero/>
         {/* <Card /> */}
         <Lottery />
         <Table />

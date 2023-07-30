@@ -10,7 +10,8 @@ import {
   TableWrapper,
 } from "../../styles/Table";
 
-const Table = ({ tableData }) => {
+const Table = ({ tableData, actualTime }) => {
+  // Update prop name to 'actualTime'
   // Ensure tableData is defined and has properties allRandomNumbers1 and allRandomNumbers2
   if (
     !tableData ||
@@ -23,6 +24,15 @@ const Table = ({ tableData }) => {
   // Extract the data from the prop
   const { allRandomNumbers1, allRandomNumbers2 } = tableData;
 
+  // Function to format time to display only hours and minutes
+  const formatTime = (time) => {
+    const [hour, minute] = time.split(":");
+    const parsedHour = parseInt(hour, 10);
+    const ampm = parsedHour >= 12 ? "AM" : "PM";
+    const formattedHour = parsedHour % 12 || 12; // Convert 0 to 12
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
   return (
     <TableSect>
       <TableWrapper>
@@ -31,8 +41,8 @@ const Table = ({ tableData }) => {
             <TableRow>
               <ColumnNames>Date</ColumnNames>
               <ColumnNames>Time</ColumnNames>
-              <ColumnNames>Result1</ColumnNames>
-              <ColumnNames>Result2</ColumnNames>
+              <ColumnNames>Bhutan Gold</ColumnNames>
+              <ColumnNames>Bhutan Deluxe</ColumnNames>
             </TableRow>
           </TableHeading>
 
@@ -41,7 +51,11 @@ const Table = ({ tableData }) => {
             {allRandomNumbers1.map((data1, index) => (
               <TableRow key={`resultRow_${index}`}>
                 <TableData>{String(data1.date)}</TableData>
-                <TableData>{String(data1.selectedTime)}</TableData>
+                <TableData>
+                  {data1.selectedTime !== undefined
+                    ? formatTime(data1.selectedTime)
+                    : formatTime(data1.time)}
+                </TableData>
                 <TableData>{data1.number}</TableData>
                 {allRandomNumbers2[index] ? (
                   <TableData>{allRandomNumbers2[index].number}</TableData>
@@ -50,6 +64,7 @@ const Table = ({ tableData }) => {
                 )}
               </TableRow>
             ))}
+            {/* Display the current time if it's not manually selected */}
           </TableBody>
         </ResultTable>
       </TableWrapper>

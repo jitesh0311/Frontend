@@ -75,6 +75,9 @@ const Login = () => {
         <LoginContent>
           <FormWrapper>
             <SignIn onSubmit={handleSubmit(onSubmitHandler)}>
+              <div>
+                <h1 style={{color:"white"}}>Welcome Admin !</h1>
+              </div>
               <TextFieldWrapper>
                 <StyledTextField
                   id="email"

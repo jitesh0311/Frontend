@@ -1,6 +1,5 @@
 import styled from "styled-components";
-// import { Button } from "@mui/material";
-// import { TextField } from "@material-ui/core";
+
 
 export const SpotifySection = styled.div`
     width:100%;
@@ -49,12 +48,17 @@ export const SignUp = styled.div`
 `
 export const StyledTextField = styled.input`
 width: 100%;
-max-width: 350px;
+max-width: 500px;
+padding: 10px;
+outline: none;
+border-radius: 5px;
 `
 export const SignInButton = styled.button`
-width: 100%;
-max-width: 350px;
-`
+  width: 100%;
+  max-width: 350px;
+  padding: 5px;
+  outline: none;
+`;
 export const TextFieldWrapper = styled.div`
 display:flex;
 flex-direction: column;
@@ -62,7 +66,7 @@ gap:20px;
 width:100%;
 align-items: center;
 justify-content: center;
-max-width: 400px;   
+max-width: 500px;   
 `
 
 export const ErrorMessage = styled.p`
@@ -74,7 +78,15 @@ export const SignUpRouter = styled.p``
 
 
 export const FormWrapper = styled.div`
-  border: 2px solid #ccc; /* Add your desired border properties here */
-  padding: 100px;
+  border: 1px solid #fffefee6;; /* Add your desired border properties here */
+  padding: 70px; /* Add your desired padding */
   border-radius: 10px; /* Optional: Add border radius for rounded corners */
-  `
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add box shadow for a subtle effect */
+  width: 100%;
+  max-width: 500px;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+

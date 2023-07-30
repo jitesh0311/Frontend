@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ref, push, onValue, off } from "firebase/database";
+import React, { useState } from "react";
+import { ref, push } from "firebase/database";
 import { db } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,18 +23,17 @@ const AdminPanel = () => {
   const numberOptions = Array.from({ length: 100 }, (_, index) => index);
 
   const generateTimeOptions = () => {
-    const startTime = 9 * 60; // 9 am in minutes (9 hours * 60 minutes)
-    const endTime = 21 * 60; // 9 pm in minutes (21 hours * 60 minutes)
-    const gap = 15; // Gap in minutes
     const timeOptions = [];
+    const gap = 15; // Gap in minutes
 
-    for (let time = startTime; time <= endTime; time += gap) {
-      const hours = Math.floor(time / 60);
-      const minutes = time % 60;
-      const formattedTime = `${String(hours).padStart(2, "0")}:${String(
-        minutes
-      ).padStart(2, "0")}`;
-      timeOptions.push(formattedTime);
+    for (let hours = 0; hours < 24; hours++) {
+      for (let minutes = 0; minutes < 60; minutes += gap) {
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const formattedHours = hours % 12 || 12; // Convert 0 to 12
+        const formattedMinutes = String(minutes).padStart(2, "0");
+        const formattedTime = `${formattedHours}:${formattedMinutes} ${ampm}`;
+        timeOptions.push(formattedTime);
+      }
     }
 
     return timeOptions;
@@ -48,7 +47,10 @@ const AdminPanel = () => {
     const month = formattedDate.getMonth() + 1;
     const year = formattedDate.getFullYear();
 
-    return `${String(month).padStart(2, "0")}/${String(day).padStart(2, )}/${year}`;
+    return `${String(month).padStart(2)}/${String(day).padStart(
+      2,
+      "0"
+    )}/${year}`;
   };
 
   const [selectedResult1, setSelectedResult1] = useState("");
@@ -72,7 +74,20 @@ const AdminPanel = () => {
     setSelectedTime(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const formatTime = (time) => {
+    const date = new Date(`2000-01-01T${time}`);
+    const formattedTime = date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    console.log("formattedTime", formattedTime);
+    return formattedTime;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (
       selectedResult1 !== "" &&
       selectedResult2 !== "" &&
@@ -80,24 +95,30 @@ const AdminPanel = () => {
       selectedTime !== ""
     ) {
       const timestamp = new Date().toISOString();
-      const time = new Date().toLocaleTimeString();
 
       // Format the selected date
       const formattedDate = formatDate(selectedDate);
 
+      // Format the selected time
+      const formattedTime = formatTime(selectedTime);
+
+      console.log(selectedTime);
+
       // Push the selected numbers, timestamp, and time to the respective Firebase database references
-      push(ref(db, "allRandomNumbers1"), {
-        number: selectedResult1,
+      push(ref(db, "updatedLotteryNumbers"), {
+        number1: selectedResult1,
+        number2: selectedResult2,
         date: formattedDate,
-        selectedTime, // Add the selected time to the data
+        selectedTime,
+        time: formattedTime, // Use the formatted time without seconds
       });
 
-      push(ref(db, "allRandomNumbers2"), {
-        number: selectedResult2,
-
-        date: formattedDate,
-        selectedTime, // Add the selected time to the data
-      });
+      // push(ref(db, "allRandomNumbers2"), {
+      //   number: selectedResult2,
+      //   time: formattedTime, // Use the formatted time without seconds
+      //   date: formattedDate,
+      //   selectedTime,
+      // });
 
       // Reset the selected values to empty strings
       setSelectedResult1("");
@@ -107,27 +128,7 @@ const AdminPanel = () => {
     }
   };
 
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const selectedTimeRef = ref(db, "allRandomNumbers1");
-
-    const handleListen = (snapshot) => {
-      const data = snapshot.val();
-
-      // Process the data received from the database
-      // For example, you can update the state to display the numbers at the selected time
-      console.log(data); // Replace this with your logic
-    };
-
-    onValue(selectedTimeRef, handleListen);
-
-    // Clean up the listener when the component unmounts
-    return () => {
-      off(selectedTimeRef, handleListen);
-    };
-  }, []);
 
   return (
     <AdminSection>
@@ -192,7 +193,9 @@ const AdminPanel = () => {
                 </TimeSelect>
               </AdminBottomLeft>
               <SubmitButtonWrap>
-                <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+                <SubmitButton onClick={(e) => handleSubmit(e)}>
+                  Submit
+                </SubmitButton>
               </SubmitButtonWrap>
             </AdminBottom>
           </AdminFormWrapper>

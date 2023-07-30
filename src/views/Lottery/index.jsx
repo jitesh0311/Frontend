@@ -12,7 +12,7 @@ import {
   RollUp,
   RollWrapper,
 } from "../../styles/Lottery";
-import ResultFrame from "../../assets/frame.jpg";
+import ResultFrame from "../../assets/frame.png";
 import RollUpImg from "../../assets/rollup.gif";
 import RollDownImg from "../../assets/rolldown.gif";
 import Table from "../Table";
@@ -97,7 +97,6 @@ const Lottery = () => {
   };
   const setLastGeneratedTime = (time) => {
     // Implement the logic to save the time to the database or do other actions if needed.
-    console.log("Last generated time:", time);
   };
 
   // Function to push the new combined number with timestamp to the Firebase database
@@ -151,17 +150,13 @@ const Lottery = () => {
   const generateNewNumbers = () => {
     const now = new Date();
 
-    // Stop generating numbers after 18:25 (6:25 PM)
-    if (now.getHours() === 13 && now.getMinutes() >= 44) {
-      console.log("Generatingnumbers stopped.");
+    if (now.getHours() === 21 && now.getMinutes() >= 44) {
       return; // Exit the function and stop generating numbers
     }
     const newRandomNumber1 = generateRandomNumber();
     const newRandomNumber2 = generateRandomNumber();
     const newRandomNumber3 = generateRandomNumber();
     const newRandomNumber4 = generateRandomNumber();
-
-    // Stop generating numbers after 18:25 (6:25 PM)
 
     setRandomNumber1(newRandomNumber1);
     setRandomNumber2(newRandomNumber2);
@@ -197,7 +192,7 @@ const Lottery = () => {
     // Set up the interval to generate new numbers every 1 minute
     const interval = setInterval(() => {
       generateNewNumbers();
-    }, 900000); // Change this value to 60000 for 1 minute
+    }, 900000); // Change this value to 10000 for 10 sec
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);

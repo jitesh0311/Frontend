@@ -19,7 +19,7 @@ export const TableWrapper = styled.div`
 export const ResultTable = styled.table`
   width: 100%;
   max-width: 900px;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `;
 export const TableHeading = styled.thead``;
 
@@ -31,11 +31,17 @@ export const TableRow = styled.tr`
 export const ColumnNames = styled.th`
   width: 100%;
   max-width: 250px;
+  border: 2px solid #fffefee6;
+  color: #fffefee6;
 `;
 
-export const TableBody = styled.tbody``;
+export const TableBody = styled.tbody`
+
+`;
 export const TableData = styled.td`
   text-align: center;
   width: 100%;
   max-width: 250px;
+  border: 1px solid #fffefee6;
+  color: #fffefee6;
 `;
