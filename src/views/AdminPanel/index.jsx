@@ -102,7 +102,8 @@ const AdminPanel = () => {
       // Format the selected time
       const formattedTime = formatTime(selectedTime);
 
-      console.log(selectedTime);
+      console.log("formattedTime", formattedTime);
+      console.log("selectedTime", selectedTime);
 
       // Push the selected numbers, timestamp, and time to the respective Firebase database references
       push(ref(db, "updatedLotteryNumbers"), {

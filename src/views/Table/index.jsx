@@ -22,16 +22,30 @@ const Table = ({ tableData, actualTime }) => {
   }
 
   // Extract the data from the prop
-  const { allRandomNumbers1, allRandomNumbers2 } = tableData;
+  const { allRandomNumbers1, allRandomNumbers2, updatedLotteryNumbers } =
+    tableData;
 
+  console.log(tableData);
   // Function to format time to display only hours and minutes
-  const formatTime = (time) => {
-    const [hour, minute] = time.split(":");
-    const parsedHour = parseInt(hour, 10);
-    const ampm = parsedHour >= 12 ? "AM" : "PM";
-    const formattedHour = parsedHour % 12 || 12; // Convert 0 to 12
-    return `${formattedHour}:${minute} ${ampm}`;
-  };
+  // const formatTime = (time) => {
+  //   const [hour, minute] = time.split(":");
+  //   const parsedHour = parseInt(hour, 10);
+  //   const ampm = parsedHour >= 12 ? "AM" : "PM";
+  //   const formattedHour = parsedHour % 12 || 12; // Convert 0 to 12
+  //   return `${formattedHour}:${minute} ${ampm}`;
+  // };
+  function checkAdminSelected(arr, time) {
+    let selectedArr = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].selectedTime === time) {
+        selectedArr.push(arr[i]);
+        break;
+      } else {
+        continue;
+      }
+    }
+    return selectedArr;
+  }
 
   return (
     <TableSect>
@@ -51,14 +65,22 @@ const Table = ({ tableData, actualTime }) => {
             {allRandomNumbers1.map((data1, index) => (
               <TableRow key={`resultRow_${index}`}>
                 <TableData>{String(data1.date)}</TableData>
+                <TableData>{data1.time}</TableData>
                 <TableData>
-                  {data1.selectedTime !== undefined
-                    ? formatTime(data1.selectedTime)
-                    : formatTime(data1.time)}
+                  {checkAdminSelected(updatedLotteryNumbers, data1.time)
+                    .length === 0
+                    ? data1.number
+                    : checkAdminSelected(updatedLotteryNumbers, data1.time)[0]
+                        ?.number1}
                 </TableData>
-                <TableData>{data1.number}</TableData>
                 {allRandomNumbers2[index] ? (
-                  <TableData>{allRandomNumbers2[index].number}</TableData>
+                  <TableData>
+                    {checkAdminSelected(updatedLotteryNumbers, data1.time)
+                      .length === 0
+                      ? allRandomNumbers2[index]?.number
+                      : checkAdminSelected(updatedLotteryNumbers, data1.time)[0]
+                          ?.number2}
+                  </TableData>
                 ) : (
                   <TableData>-</TableData>
                 )}

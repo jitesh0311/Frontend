@@ -26,6 +26,34 @@ export const AdminForm = styled.form`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 900px) {
+    max-width: 700px;
+  }
+
+  @media (max-width: 800px) {
+    max-width: 600px;
+  }
+
+  @media (max-width: 700px) {
+    max-width: 500px;
+  }
+
+  @media (max-width: 600px) {
+    max-width: 400px;
+  }
+
+  @media (max-width: 500px) {
+    max-width: 350px;
+  }
+
+  @media (max-width: 400px) {
+    max-width: 300px;
+  }
+
+  @media (max-width: 360px) {
+    max-width: 250px;
+  }
 `;
 export const AdminFormWrapper = styled.div`
   width: 100%;
@@ -36,6 +64,9 @@ export const AdminFormWrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 30px;
+  @media (max-width: 900px) {
+    max-width: 700px;
+  }
 `;
 
 export const AdminHeadingWrapper = styled.div`
@@ -59,6 +90,31 @@ export const AdminBottom = styled.div`
   flex-direction: column;
   gap: 15px;
   min-height: 380px;
+  @media (max-width: 900px) {
+    max-width: 550px;
+  }
+
+  @media (max-width: 800px) {
+    max-width: 500px;
+  }
+
+  @media (max-width: 700px) {
+    max-width: 400px;
+  }
+
+  @media (max-width: 600px) {
+    max-width: 300px;
+  }
+
+  @media (max-width: 500px) {
+    max-width: 200px;
+  }
+
+  @media (max-width: 400px) {
+    max-width: 150px;
+  }
+
+ 
 `;
 export const AdminBottomLeft = styled.div`
   display: flex;

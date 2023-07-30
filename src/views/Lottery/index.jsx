@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ref, onValue, push, get, child } from "firebase/database";
+import { ref, onValue, push, get } from "firebase/database";
 import { db } from "../../utils/firebase";
 import {
   Frame,
@@ -32,6 +32,7 @@ const Lottery = () => {
   const [firebaseData, setFirebaseData] = useState({
     allRandomNumbers1: [],
     allRandomNumbers2: [],
+    updatedLotteryNumbers: [],
   });
 
   const fetchDataFromFirebase = () => {
@@ -56,10 +57,24 @@ const Lottery = () => {
         }
       });
 
+      const unsubscribe3 = onValue(
+        ref(db, "updatedLotteryNumbers"),
+        (snapshot) => {
+          if (snapshot.exists()) {
+            const updatedLotteryNumbers = Object.values(snapshot.val());
+            setFirebaseData((prevData) => ({
+              ...prevData,
+              updatedLotteryNumbers,
+            }));
+          }
+        }
+      );
+
       return () => {
         // Clean up the subscriptions when the component unmounts
         unsubscribe1();
         unsubscribe2();
+        unsubscribe3();
       };
     } catch (error) {
       console.error("Error fetching data from the database:", error);
@@ -88,13 +103,18 @@ const Lottery = () => {
   const pushCombinedNumber1ToDB = (number) => {
     try {
       const timestamp = new Date().toISOString();
-      const time = new Date().toLocaleTimeString();
-      const date = new Date().toLocaleDateString(); // Get the current date as a string
+      const time = new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+      const date = new Date().toLocaleDateString();
+      // Get the current date as a string
       push(ref(db, "allRandomNumbers1"), { number, timestamp, time, date });
     } catch (error) {
       console.error("Error pushing combined number 1 to the database:", error);
     }
   };
+
   const setLastGeneratedTime = (time) => {
     // Implement the logic to save the time to the database or do other actions if needed.
   };
@@ -103,7 +123,10 @@ const Lottery = () => {
   const pushCombinedNumber2ToDB = (number) => {
     try {
       const timestamp = new Date().toISOString();
-      const time = new Date().toLocaleTimeString();
+      const time = new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
       const date = new Date().toLocaleDateString(); // Get the current date as a string
       push(ref(db, "allRandomNumbers2"), { number, timestamp, time, date });
     } catch (error) {
@@ -147,21 +170,12 @@ const Lottery = () => {
   };
 
   // Function to generate new numbers and combine them
-  const generateNewNumbers = () => {
-    const now = new Date();
 
-    if (now.getHours() === 21 && now.getMinutes() >= 44) {
-      return; // Exit the function and stop generating numbers
-    }
+  const generateNewNumbers = () => {
     const newRandomNumber1 = generateRandomNumber();
     const newRandomNumber2 = generateRandomNumber();
     const newRandomNumber3 = generateRandomNumber();
     const newRandomNumber4 = generateRandomNumber();
-
-    setRandomNumber1(newRandomNumber1);
-    setRandomNumber2(newRandomNumber2);
-    setRandomNumber3(newRandomNumber3);
-    setRandomNumber4(newRandomNumber4);
 
     const newCombinedNumber1 = combineNumbers(
       newRandomNumber1,
@@ -175,51 +189,63 @@ const Lottery = () => {
     if (newCombinedNumber1 === newCombinedNumber2) {
       // If they are the same, generate new numbers again
       return generateNewNumbers();
-    } else {
-      // If they are different, update the combined numbers in the database
-      pushCombinedNumber1ToDB(newCombinedNumber1);
-      pushCombinedNumber2ToDB(newCombinedNumber2);
     }
+
+    // If they are different, update the state variables with the new numbers
+    setRandomNumber1(newRandomNumber1);
+    setRandomNumber2(newRandomNumber2);
+    setRandomNumber3(newRandomNumber3);
+    setRandomNumber4(newRandomNumber4);
+    setCombinedNumber1(newCombinedNumber1);
+    setCombinedNumber2(newCombinedNumber2);
+
+    // Push the combined numbers to the database
+    pushCombinedNumber1ToDB(newCombinedNumber1);
+    pushCombinedNumber2ToDB(newCombinedNumber2);
+
     // Save the current time as the last generated time
     setLastGeneratedTime(new Date().getTime());
   };
 
-  useEffect(() => {
-    // Fetch the last generated numbers from the database
-    fetchLastGeneratedNumbersFromDB();
-    fetchDataFromFirebase();
+ const updateNumbers = () => {
+   generateNewNumbers();
+   setInterval(generateNewNumbers, 900000); // 10 seconds (10000 milliseconds)
+ };
 
-    // Set up the interval to generate new numbers every 1 minute
-    const interval = setInterval(() => {
-      generateNewNumbers();
-    }, 900000); // Change this value to 10000 for 10 sec
+ useEffect(() => {
+   // Fetch the last generated numbers from the database
+   fetchLastGeneratedNumbersFromDB();
+   fetchDataFromFirebase();
 
-    // Clean up the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []);
+  const date = new Date();
+  const minutes = date.getMinutes();
+  const remainder = minutes % 15;
+  const minutesToAdd = remainder === 0 ? 0 : 15 - remainder;
+  date.setMinutes(minutes + minutesToAdd, 0, 0); // Set seconds and milliseconds to 0
+  const millisecondsUntilNextQuarterHour =
+    date.getTime() - new Date().getTime();
 
-  useEffect(() => {
-    // This effect will run once when the component mounts
-    // Set a timer to hide the image after 3-4 seconds
-    const timer = setTimeout(() => {
+   const initialUpdateTimer = setTimeout(() => {
+     console.log("Triggering generateNewNumbers...");
+     updateNumbers(); // Generate numbers immediately after the initial delay
+   }, millisecondsUntilNextQuarterHour);
+
+   const interval = setInterval(() => {
+     console.log("Triggering generateNewNumbers...");
+     updateNumbers(); // Generate numbers every 10 seconds
+   }, 900000);
+
+   const timer = setTimeout(() => {
       setShowImage(false);
-    }, 2000); // Change this value to 4000 for 4 seconds
+    }, 2000);
 
-    // Clean up the timer when the component unmounts
-    return () => clearTimeout(timer);
-  }, []);
+   // Clear the timers when the component is unmounted
+   return () => {
+     clearTimeout(initialUpdateTimer);
+     clearInterval(interval);
+   };
+ }, []);
 
-  const showImageAfterDelay = () => {
-    setTimeout(() => {
-      setDisplayImage(true); // Show the random number images
-      setShowImage(false); // Hide the RollUp and RollDown images
-    }, 2000); // Change this value to adjust the delay (in milliseconds)
-  };
-
-  // Call the function to start the timer when the component mounts
-  useEffect(() => {
-    showImageAfterDelay();
-  }, []);
 
   return (
     <LotterySect>
@@ -237,53 +263,56 @@ const Lottery = () => {
 
           {displayImage && (
             <RandomImgWrapper>
-              {/* Display the first digit of the combined number 1 as an image */}
-              {randomNumber1 !== null &&
-              randomNumber1 >= 0 &&
-              randomNumber1 <= 9 ? (
-                <RandomImg
-                  src={require(`../../assets/${randomNumber1}.png`)}
-                  alt={`Random Number ${randomNumber1}`}
-                />
-              ) : (
-                <p>Image not found</p>
-              )}
+              <div>
+                {/* Display the first digit of the combined number 1 as an image */}
+                {randomNumber1 !== null &&
+                randomNumber1 >= 0 &&
+                randomNumber1 <= 9 ? (
+                  <RandomImg
+                    src={require(`../../assets/${randomNumber1}.png`)}
+                    alt={`Random Number ${randomNumber1}`}
+                  />
+                ) : (
+                  <p>Image not found</p>
+                )}
 
-              {/* Display the second digit of the combined number 1 as an image */}
-              {randomNumber2 !== null &&
-              randomNumber2 >= 0 &&
-              randomNumber2 <= 9 ? (
-                <RandomImg
-                  src={require(`../../assets/${randomNumber2}.png`)}
-                  alt={`Random Number ${randomNumber2}`}
-                />
-              ) : (
-                <p>Image not found</p>
-              )}
+                {/* Display the second digit of the combined number 1 as an image */}
+                {randomNumber2 !== null &&
+                randomNumber2 >= 0 &&
+                randomNumber2 <= 9 ? (
+                  <RandomImg
+                    src={require(`../../assets/${randomNumber2}.png`)}
+                    alt={`Random Number ${randomNumber2}`}
+                  />
+                ) : (
+                  <p>Image not found</p>
+                )}
+              </div>
+              <div>
+                {/* Display the first digit of the combined number 2 as an image */}
+                {randomNumber3 !== null &&
+                randomNumber3 >= 0 &&
+                randomNumber3 <= 9 ? (
+                  <RandomImg
+                    src={require(`../../assets/${randomNumber3}.png`)}
+                    alt={`Random Number ${randomNumber3}`}
+                  />
+                ) : (
+                  <p>Image not found</p>
+                )}
 
-              {/* Display the first digit of the combined number 2 as an image */}
-              {randomNumber3 !== null &&
-              randomNumber3 >= 0 &&
-              randomNumber3 <= 9 ? (
-                <RandomImg
-                  src={require(`../../assets/${randomNumber3}.png`)}
-                  alt={`Random Number ${randomNumber3}`}
-                />
-              ) : (
-                <p>Image not found</p>
-              )}
-
-              {/* Display the second digit of the combined number 2 as an image */}
-              {randomNumber4 !== null &&
-              randomNumber4 >= 0 &&
-              randomNumber4 <= 9 ? (
-                <RandomImg
-                  src={require(`../../assets/${randomNumber4}.png`)}
-                  alt={`Random Number ${randomNumber4}`}
-                />
-              ) : (
-                <p>Image not found</p>
-              )}
+                {/* Display the second digit of the combined number 2 as an image */}
+                {randomNumber4 !== null &&
+                randomNumber4 >= 0 &&
+                randomNumber4 <= 9 ? (
+                  <RandomImg
+                    src={require(`../../assets/${randomNumber4}.png`)}
+                    alt={`Random Number ${randomNumber4}`}
+                  />
+                ) : (
+                  <p>Image not found</p>
+                )}
+              </div>
             </RandomImgWrapper>
           )}
         </FrameWrapper>

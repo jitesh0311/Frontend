@@ -1,6 +1,6 @@
 import React from 'react'
 import {CallResults,Logo, Nav, NavLeft, NavRight, NavWrapper } from '../../styles/Header'
-import LogoImg from '../../assets/LogoImg.png'
+// import LogoImg from '../../assets/LogoImg.png'
 import { useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
@@ -11,7 +11,8 @@ const Header = () => {
     <Nav>
       <NavWrapper>
         <NavLeft>
-          <Logo src={LogoImg} />
+          {/* <Logo src={LogoImg} /> */}
+          <h1>Bhutan<span>X</span>Pro</h1>
         </NavLeft>
         <NavRight>
           <CallResults onClick={handleCallResultsClick}>Admin</CallResults>

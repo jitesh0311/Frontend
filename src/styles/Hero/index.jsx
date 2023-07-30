@@ -35,6 +35,7 @@ export const HeroLeft = styled.div`
     @media (max-width:768px)
     {
         text-align: center;
+        gap:40px;
     }
     
 `
@@ -44,20 +45,78 @@ export const HeadingWrap = styled.div`
     gap:25px;
 `
 export const Heading1 = styled.h1`
-    font-size: 50px;
-    line-height: 1;
-    color: #fffefee6;
-`
+  font-size: 50px;
+  line-height: 1;
+  color: #fffefee6;
+
+  @media (max-width: 957px) {
+    font-size: 45px;
+  }
+
+  @media (max-width: 865px) {
+    font-size: 40px;
+  }
+
+  @media (max-width: 782px) {
+    font-size: 35px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 45px;
+  }
+  @media (max-width: 480px) {
+    font-size: 40px;
+  }
+  @media (max-width: 403px) {
+    font-size: 30px;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 25px;
+  }
+`;
 
 export const Heading2 = styled.p`
   font-size: 22px;
   line-height: 1;
   color: #fffefee6;
+
+  @media (max-width: 957px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 865px) {
+    font-size: 18px;
+  }
+
+  @media (max-width: 782px) {
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
+  @media (max-width: 403px) {
+    font-size: 16px;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 14px;
+  }
 `;
 export const CheckResultsWrap = styled.div`
-    width:100%;
-    max-width: 200px;
-`
+  width: 100%;
+  max-width: 200px;
+  display: flex;
+  @media (max-width: 768px) {
+    max-width: 500px;
+    justify-content: center;
+  }
+`;
 export const CheckResults = styled.a`
   padding: 10px 15px;
   text-decoration: none;
@@ -65,7 +124,31 @@ export const CheckResults = styled.a`
   cursor: pointer;
   color: white;
   border-radius: 10px;
-  font-size:22px;
+  font-size: 22px;
+
+  @media (max-width: 957px) {
+    font-size: 18px;
+  }
+
+  @media (max-width: 865px) {
+    font-size: 16px;
+  }
+
+  @media (max-width: 782px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+
+  @media (max-width: 403px) {
+    font-size: 16px;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 14px;
+  }
 
   &:hover {
     background-color: #967ff3;
@@ -90,7 +173,24 @@ export const HeroRightImg = styled.img`
   border-radius: 100%;
   animation: rotate 10s linear infinite; /* Animation name, duration, timing function, and infinite loop */
   transition: transform 0.3s ease;
+
+  @media (max-width: 957px) {
+    width: 400px;
+  }
+
+  @media (max-width: 865px) {
+    width: 380px;
+  }
+
+  @media (max-width: 865px) {
+    width: 360px;
+  }
+
   @media (max-width: 768px) {
+    width: 400px;
+  }
+
+  @media (max-width: 375px) {
     width: 300px;
   }
 
