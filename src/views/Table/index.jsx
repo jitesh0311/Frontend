@@ -1,6 +1,8 @@
 import React from "react";
 import {
   ColumnNames,
+  PastDataButton,
+  PastDataWrapper,
   ResultTable,
   TableBody,
   TableData,
@@ -10,7 +12,15 @@ import {
   TableWrapper,
 } from "../../styles/Table";
 
+import { useNavigate } from "react-router-dom";
+
 const Table = ({ tableData, actualTime }) => {
+  const navigate = useNavigate();
+
+  const handleCallResultsClick = () => {
+    navigate("/PastData");
+  };
+
   // Update prop name to 'actualTime'
   // Ensure tableData is defined and has properties allRandomNumbers1 and allRandomNumbers2
   if (
@@ -88,6 +98,11 @@ const Table = ({ tableData, actualTime }) => {
             ))}
             {/* Display the current time if it's not manually selected */}
           </TableBody>
+          <PastDataWrapper>
+            <PastDataButton onClick={handleCallResultsClick}>
+              View Past Data
+            </PastDataButton>
+          </PastDataWrapper>
         </ResultTable>
       </TableWrapper>
     </TableSect>

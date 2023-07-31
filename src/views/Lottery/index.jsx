@@ -207,68 +207,68 @@ const Lottery = () => {
     setLastGeneratedTime(new Date().getTime());
   };
 
- const updateNumbers = () => {
-   generateNewNumbers();
-   setInterval(generateNewNumbers, 900000); // 10 seconds (10000 milliseconds)
- };
+  const updateNumbers = () => {
+    generateNewNumbers();
+    setInterval(generateNewNumbers, 900000); // 10 seconds (10000 milliseconds)
+  };
 
- useEffect(() => {
-   // Fetch the last generated numbers from the database
-   fetchLastGeneratedNumbersFromDB();
-   fetchDataFromFirebase();
+  useEffect(() => {
+    // Fetch the last generated numbers from the database
+    fetchLastGeneratedNumbersFromDB();
+    fetchDataFromFirebase();
 
-  const date = new Date();
-  const minutes = date.getMinutes();
-  const remainder = minutes % 15;
-  const minutesToAdd = remainder === 0 ? 0 : 15 - remainder;
-  date.setMinutes(minutes + minutesToAdd, 0, 0); // Set seconds and milliseconds to 0
-  const millisecondsUntilNextQuarterHour =
-    date.getTime() - new Date().getTime();
+    const date = new Date();
+    const minutes = date.getMinutes();
+    const remainder = minutes % 15;
+    const minutesToAdd = remainder === 0 ? 0 : 15 - remainder;
+    date.setMinutes(minutes + minutesToAdd, 0, 0); // Set seconds and milliseconds to 0
+    const millisecondsUntilNextQuarterHour =
+      date.getTime() - new Date().getTime();
 
-   const initialUpdateTimer = setTimeout(() => {
-     console.log("Triggering generateNewNumbers...");
-     updateNumbers(); // Generate numbers immediately after the initial delay
-   }, millisecondsUntilNextQuarterHour);
+    const initialUpdateTimer = setTimeout(() => {
+      console.log("Triggering generateNewNumbers...");
+      updateNumbers(); // Generate numbers immediately after the initial delay
+    }, millisecondsUntilNextQuarterHour);
 
-   const interval = setInterval(() => {
-     console.log("Triggering generateNewNumbers...");
-     updateNumbers(); // Generate numbers every 10 seconds
-   }, 900000);
+    const interval = setInterval(() => {
+      console.log("Triggering generateNewNumbers...");
+      updateNumbers(); // Generate numbers every 10 seconds
+    }, 900000);
 
-   const timer = setTimeout(() => {
+    const timer = setTimeout(() => {
       setShowImage(false);
     }, 2000);
 
-   // Clear the timers when the component is unmounted
-   return () => {
-     clearTimeout(initialUpdateTimer);
-     clearInterval(interval);
-   };
- }, []);
+    // Clear the timers when the component is unmounted
+    return () => {
+      clearTimeout(initialUpdateTimer);
+      clearInterval(interval);
+    };
+  }, []);
 
- const showImageAfterDelay = () => {
-   setTimeout(() => {
-     setDisplayImage(true); // Show the random number images
-     setShowImage(false); // Hide the RollUp and RollDown images
-   }, 2000); // Change this value to adjust the delay (in milliseconds)
- };
+  const showImageAfterDelay = () => {
+    setTimeout(() => {
+      setDisplayImage(true); // Show the random number images
+      setShowImage(false); // Hide the RollUp and RollDown images
+    }, 2000); // Change this value to adjust the delay (in milliseconds)
+  };
 
- // Call the function to start the timer when the component mounts
- useEffect(() => {
-   showImageAfterDelay();
- }, []);
-
-
+  // Call the function to start the timer when the component mounts
+  useEffect(() => {
+    showImageAfterDelay();
+  }, []);
 
   return (
     <LotterySect>
       <LotteryWrapper>
         <FrameWrapper>
+          <h1 style={{ color: "white", textAlign: "center" }}>
+            Bhutan <span style={{ color: "#FFD700" }}>Gold</span>
+          </h1>
           <Frame src={ResultFrame} />
+
           {showImage && (
             <RollWrapper>
-              <RollUp src={RollUpImg} />
-              <RollDown src={RollDownImg} />
               <RollUp src={RollUpImg} />
               <RollDown src={RollDownImg} />
             </RollWrapper>
@@ -301,6 +301,23 @@ const Lottery = () => {
                   <p>Image not found</p>
                 )}
               </div>
+            </RandomImgWrapper>
+          )}
+        </FrameWrapper>
+        <FrameWrapper>
+          <h1 style={{ color: "white", textAlign: "center" }}>
+            Bhutan <span style={{ color: "#D3D3D3" }}>Deluxe</span>
+          </h1>
+          <Frame src={ResultFrame} />
+          {showImage && (
+            <RollWrapper>
+              <RollUp src={RollUpImg} />
+              <RollDown src={RollDownImg} />
+            </RollWrapper>
+          )}
+
+          {displayImage && (
+            <RandomImgWrapper>
               <div>
                 {/* Display the first digit of the combined number 2 as an image */}
                 {randomNumber3 !== null &&

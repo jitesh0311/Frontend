@@ -7,6 +7,7 @@ import Lottery from '../../views/Lottery'
 import Table from '../../views/Table'
 import AdminPanel from '../../views/AdminPanel'
 import Login from '../../components/Login'
+import LotteryApp from '../../components/DatePicker'
 
 
 
@@ -26,9 +27,10 @@ const Home = () => {
         <Header/>
         <Hero/>
         {/* <Card /> */}
+       {/* <LotteryApp/> */}
         <Lottery />
         <Table />
-        <AdminPanel />
+        {/* <AdminPanel /> */}
        {/* <Login/> */}
     </Container>
   )

@@ -14,9 +14,9 @@ const Header = () => {
           {/* <Logo src={LogoImg} /> */}
           <h1>Bhutan<span>X</span>Pro</h1>
         </NavLeft>
-        <NavRight>
+        {/* <NavRight>
           <CallResults onClick={handleCallResultsClick}>Admin</CallResults>
-        </NavRight>
+        </NavRight> */}
       </NavWrapper>
     </Nav>
   );

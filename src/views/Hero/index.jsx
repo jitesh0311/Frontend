@@ -7,12 +7,19 @@ const Hero = () => {
     const handleCallResultsClick = () => {
       navigate("/Lottery");
     };
+     const handleAdminLogin = () => {
+       navigate("/Login");
+     };
+
   return (
     <HeroSect>
       <HeroWrapper>
         <HeroLeft>
           <HeadingWrap>
-            <Heading1>Welcome To The Gaming Club</Heading1>
+            <Heading1>
+              Welcome To The Gaming{" "}
+              <span onClick={handleAdminLogin}>Club</span>
+            </Heading1>
             <Heading2>Try Your Luck and Win Exclusive Prizes!</Heading2>
           </HeadingWrap>
           <CheckResultsWrap>

@@ -5,6 +5,7 @@ import "./index.css";
 import AdminPanel from "./views/AdminPanel";
 import Lottery from "./views/Lottery";
 import Login from "../src/components/Login"
+import PastData from "./views/PastData";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/AdminPanel" element={<AdminPanel />} />
           <Route path="/Lottery" element={<Lottery />} />
-
+          <Route path="/PastData" element={<PastData />} />
         </Routes>
       </Router>
     </div>

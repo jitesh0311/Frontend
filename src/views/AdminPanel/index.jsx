@@ -131,6 +131,10 @@ const AdminPanel = () => {
 
   const navigate = useNavigate();
 
+   const handleCallResultsClick = () => {
+     navigate("/Lottery");
+   };
+
   return (
     <AdminSection>
       <AdminWrap>
@@ -194,7 +198,7 @@ const AdminPanel = () => {
                 </TimeSelect>
               </AdminBottomLeft>
               <SubmitButtonWrap>
-                <SubmitButton onClick={(e) => handleSubmit(e)}>
+                <SubmitButton onClick={handleCallResultsClick}>
                   Submit
                 </SubmitButton>
               </SubmitButtonWrap>
