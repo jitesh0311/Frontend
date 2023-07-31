@@ -246,6 +246,19 @@ const Lottery = () => {
    };
  }, []);
 
+ const showImageAfterDelay = () => {
+   setTimeout(() => {
+     setDisplayImage(true); // Show the random number images
+     setShowImage(false); // Hide the RollUp and RollDown images
+   }, 2000); // Change this value to adjust the delay (in milliseconds)
+ };
+
+ // Call the function to start the timer when the component mounts
+ useEffect(() => {
+   showImageAfterDelay();
+ }, []);
+
+
 
   return (
     <LotterySect>
