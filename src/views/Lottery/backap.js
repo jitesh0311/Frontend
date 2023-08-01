@@ -531,9 +531,9 @@ export default Lottery;
 //     const generateNewNumbers = () => {
 //       // const now = new Date();
 
-//       // if (now.getHours() === 21 && now.getMinutes() >= 44) {
-//       //   return; // Exit the function and stop generating numbers
-//       // }
+      // if (now.getHours() === 21 && now.getMinutes() >= 44) {
+      //   return; // Exit the function and stop generating numbers
+      // }
 //       const newRandomNumber1 = generateRandomNumber();
 //       const newRandomNumber2 = generateRandomNumber();
 //       const newRandomNumber3 = generateRandomNumber();

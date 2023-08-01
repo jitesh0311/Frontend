@@ -129,6 +129,7 @@ export const PastDataWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 50px;
   margin-top: 40px;
 
   @media (max-width: 521px) {

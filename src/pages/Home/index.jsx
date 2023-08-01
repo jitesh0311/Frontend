@@ -30,7 +30,7 @@ const Home = () => {
        {/* <LotteryApp/> */}
         <Lottery />
         <Table />
-        {/* <AdminPanel /> */}
+        <AdminPanel />
        {/* <Login/> */}
     </Container>
   )

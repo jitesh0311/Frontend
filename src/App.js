@@ -6,6 +6,7 @@ import AdminPanel from "./views/AdminPanel";
 import Lottery from "./views/Lottery";
 import Login from "../src/components/Login"
 import PastData from "./views/PastData";
+import PastDataFB from "./views/PastDataFB";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/AdminPanel" element={<AdminPanel />} />
           <Route path="/Lottery" element={<Lottery />} />
           <Route path="/PastData" element={<PastData />} />
+          <Route path="/PastDataFB" element={<PastDataFB />} />
         </Routes>
       </Router>
     </div>
