@@ -15,12 +15,37 @@ export const LotteryWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 80px;
+  gap: 50px;
+  flex-direction: column;
 
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 30px;
   }
+`;
+
+export const FrameSect = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DateTimeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+export const DateWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DateHeading = styled.h1`
+  color: #fffefee6;
+  font-size: 60px;
 `;
 
 export const FrameWrapper = styled.div`

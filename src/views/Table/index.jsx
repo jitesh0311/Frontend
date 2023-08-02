@@ -43,6 +43,24 @@ const Table = ({ tableData, actualTime }) => {
   const { allRandomNumbers1, allRandomNumbers2, updatedLotteryNumbers } =
     tableData;
 
+   const currentDate = new Date();
+
+   const filterData1 = allRandomNumbers1.filter(
+     (data) => new Date(data.date).toDateString() === currentDate.toDateString()
+   );
+
+   // Step 3: Filter the data based on the current date for allRandomNumbers2
+   const filterData2 = allRandomNumbers2.filter(
+     (data) => new Date(data.date).toDateString() === currentDate.toDateString()
+   );
+
+   const checkAdminSelect = (updatedLotteryNumbers, time) => {
+     // Implement your logic to check and return selected data
+     // For example:
+     return updatedLotteryNumbers.filter((item) => item.time === time);
+   };
+
+
   function checkAdminSelected(arr, time) {
     let selectedArr = [];
     for (var i = 0; i < arr.length; i++) {
@@ -108,66 +126,32 @@ const Table = ({ tableData, actualTime }) => {
           )}
           {showTable && (
             <TableBody>
-              {/* Display the data from allRandomNumbers1 and allRandomNumbers2 */}
-              {filteredData.length > 0
-                ? // Show the filtered data if a date is selected
-                  filteredData.map((data1, index) => (
-                    <TableRow key={`resultRow_${index}`}>
-                      <TableData>{String(data1.date)}</TableData>
-                      <TableData>{data1.time}</TableData>
-                      <TableData>
-                        {checkAdminSelected(updatedLotteryNumbers, data1.time)
-                          .length === 0
-                          ? data1.number
-                          : checkAdminSelected(
-                              updatedLotteryNumbers,
-                              data1.time
-                            )[0]?.number1}
-                      </TableData>
-                      {allRandomNumbers2[index] ? (
-                        <TableData>
-                          {checkAdminSelected(updatedLotteryNumbers, data1.time)
-                            .length === 0
-                            ? allRandomNumbers2[index]?.number
-                            : checkAdminSelected(
-                                updatedLotteryNumbers,
-                                data1.time
-                              )[0]?.number2}
-                        </TableData>
-                      ) : (
-                        <TableData>-</TableData>
-                      )}
-                    </TableRow>
-                  ))
-                : // Show the entire data if no date is selected
-                  allRandomNumbers1.map((data1, index) => (
-                    <TableRow key={`resultRow_${index}`}>
-                      <TableData>{String(data1.date)}</TableData>
-                      <TableData>{data1.time}</TableData>
-                      <TableData>
-                        {checkAdminSelected(updatedLotteryNumbers, data1.time)
-                          .length === 0
-                          ? data1.number
-                          : checkAdminSelected(
-                              updatedLotteryNumbers,
-                              data1.time
-                            )[0]?.number1}
-                      </TableData>
-                      {allRandomNumbers2[index] ? (
-                        <TableData>
-                          {checkAdminSelected(updatedLotteryNumbers, data1.time)
-                            .length === 0
-                            ? allRandomNumbers2[index]?.number
-                            : checkAdminSelected(
-                                updatedLotteryNumbers,
-                                data1.time
-                              )[0]?.number2}
-                        </TableData>
-                      ) : (
-                        <TableData>-</TableData>
-                      )}
-                    </TableRow>
-                  ))}
+              {/* Display the data from allRandomNumbers1 */}
+              {filterData1.map((data1, index) => (
+                <TableRow key={`resultRow_${index}`}>
+                  <TableData>{String(data1.date)}</TableData>
+                  <TableData>{data1.time}</TableData>
+                  <TableData>
+                    {checkAdminSelect(updatedLotteryNumbers, data1.time)
+                      .length === 0
+                      ? data1.number
+                      : checkAdminSelect(updatedLotteryNumbers, data1.time)[0]
+                          ?.number1}
+                  </TableData>
+                  {/* Display the data from allRandomNumbers2 */}
+                  {filterData2[index] ? (
+                    <TableData>
+                      {checkAdminSelect(updatedLotteryNumbers, data1.time)
+                        .length === 0
+                        ? filterData2[index]?.number
+                        : checkAdminSelect(updatedLotteryNumbers, data1.time)[0]
+                            ?.number2}
+                    </TableData>
+                  ) : (
+                    <TableData>-</TableData>
+                  )}
+                </TableRow>
+              ))}
               {/* Display the current time if it's not manually selected */}
             </TableBody>
           )}

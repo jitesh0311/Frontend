@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ref, onValue, push, get } from "firebase/database";
 import { db } from "../../utils/firebase";
 import {
+  DateTimeWrapper,
+  DateWrapper,
   Frame,
   FrameWrapper,
   LotterySect,
@@ -11,6 +13,8 @@ import {
   RollDown,
   RollUp,
   RollWrapper,
+  DateHeading,
+  FrameSect,
 } from "../../styles/Lottery";
 import ResultFrame from "../../assets/frame.png";
 import RollUpImg from "../../assets/rollup.gif";
@@ -230,10 +234,10 @@ const Lottery = () => {
       updateNumbers(); // Generate numbers immediately after the initial delay
     }, millisecondsUntilNextQuarterHour);
 
-    const interval = setInterval(() => {
-      console.log("Triggering generateNewNumbers...");
-      updateNumbers(); // Generate numbers every 10 seconds
-    }, 900000);
+    // const interval = setInterval(() => {
+    //   console.log("Triggering generateNewNumbers...");
+    //   updateNumbers(); // Generate numbers every 10 seconds
+    // }, 900000);
 
     const timer = setTimeout(() => {
       setShowImage(false);
@@ -242,7 +246,7 @@ const Lottery = () => {
     // Clear the timers when the component is unmounted
     return () => {
       clearTimeout(initialUpdateTimer);
-      clearInterval(interval);
+      // clearInterval(interval);
     };
   }, []);
 
@@ -258,94 +262,136 @@ const Lottery = () => {
     showImageAfterDelay();
   }, []);
 
+  const currentDate = new Date();
+
+  // Get the individual components of the date
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1; // Months are zero-indexed, so add 1
+  const day = currentDate.getDate();
+
+  // Format the date as desired (e.g., "YYYY-MM-DD HH:MM:SS")
+
+  const formattedDate = `${year}/${month.toString().padStart(2, "0")}/${day
+    .toString()
+    .padStart(2, "0")}`;
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Function to format the time as HH:MM:SS
+  const formatTime = (time) => {
+    const hours = String(time.getHours()).padStart(2, "0");
+    const minutes = String(time.getMinutes()).padStart(2, "0");
+    const seconds = String(time.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   return (
     <LotterySect>
       <LotteryWrapper>
-        <FrameWrapper>
-          <h1 style={{ color: "white", textAlign: "center" }}>
-            Bhutan <span style={{ color: "#FFD700" }}>Gold</span>
-          </h1>
-          <Frame src={ResultFrame} />
+        <DateTimeWrapper>
+          <DateWrapper>
+            <DateHeading>{formattedDate}</DateHeading>
+          </DateWrapper>
+          <DateWrapper>
+            <DateHeading>{formatTime(currentTime)}</DateHeading>
+          </DateWrapper>
+        </DateTimeWrapper>
+        <FrameSect>
+          <FrameWrapper>
+            <h1 style={{ color: "white", textAlign: "center" }}>
+              Bhutan <span style={{ color: "#FFD700" }}>Gold</span>
+            </h1>
+            <Frame src={ResultFrame} />
 
-          {showImage && (
-            <RollWrapper>
-              <RollUp src={RollUpImg} />
-              <RollDown src={RollDownImg} />
-            </RollWrapper>
-          )}
+            {showImage && (
+              <RollWrapper>
+                <RollUp src={RollUpImg} />
+                <RollDown src={RollDownImg} />
+              </RollWrapper>
+            )}
 
-          {displayImage && (
-            <RandomImgWrapper>
-              <div>
-                {/* Display the first digit of the combined number 1 as an image */}
-                {randomNumber1 !== null &&
-                randomNumber1 >= 0 &&
-                randomNumber1 <= 9 ? (
-                  <RandomImg
-                    src={require(`../../assets/${randomNumber1}.png`)}
-                    alt={`Random Number ${randomNumber1}`}
-                  />
-                ) : (
-                  <p>Image not found</p>
-                )}
+            {displayImage && (
+              <RandomImgWrapper>
+                <div>
+                  {/* Display the first digit of the combined number 1 as an image */}
+                  {randomNumber1 !== null &&
+                  randomNumber1 >= 0 &&
+                  randomNumber1 <= 9 ? (
+                    <RandomImg
+                      src={require(`../../assets/${randomNumber1}.png`)}
+                      alt={`Random Number ${randomNumber1}`}
+                    />
+                  ) : (
+                    <p>Image not found</p>
+                  )}
 
-                {/* Display the second digit of the combined number 1 as an image */}
-                {randomNumber2 !== null &&
-                randomNumber2 >= 0 &&
-                randomNumber2 <= 9 ? (
-                  <RandomImg
-                    src={require(`../../assets/${randomNumber2}.png`)}
-                    alt={`Random Number ${randomNumber2}`}
-                  />
-                ) : (
-                  <p>Image not found</p>
-                )}
-              </div>
-            </RandomImgWrapper>
-          )}
-        </FrameWrapper>
-        <FrameWrapper>
-          <h1 style={{ color: "white", textAlign: "center" }}>
-            Bhutan <span style={{ color: "#D3D3D3" }}>Deluxe</span>
-          </h1>
-          <Frame src={ResultFrame} />
-          {showImage && (
-            <RollWrapper>
-              <RollUp src={RollUpImg} />
-              <RollDown src={RollDownImg} />
-            </RollWrapper>
-          )}
+                  {/* Display the second digit of the combined number 1 as an image */}
+                  {randomNumber2 !== null &&
+                  randomNumber2 >= 0 &&
+                  randomNumber2 <= 9 ? (
+                    <RandomImg
+                      src={require(`../../assets/${randomNumber2}.png`)}
+                      alt={`Random Number ${randomNumber2}`}
+                    />
+                  ) : (
+                    <p>Image not found</p>
+                  )}
+                </div>
+              </RandomImgWrapper>
+            )}
+          </FrameWrapper>
+          <FrameWrapper>
+            <h1 style={{ color: "white", textAlign: "center" }}>
+              Bhutan <span style={{ color: "#D3D3D3" }}>Deluxe</span>
+            </h1>
+            <Frame src={ResultFrame} />
+            {showImage && (
+              <RollWrapper>
+                <RollUp src={RollUpImg} />
+                <RollDown src={RollDownImg} />
+              </RollWrapper>
+            )}
 
-          {displayImage && (
-            <RandomImgWrapper>
-              <div>
-                {/* Display the first digit of the combined number 2 as an image */}
-                {randomNumber3 !== null &&
-                randomNumber3 >= 0 &&
-                randomNumber3 <= 9 ? (
-                  <RandomImg
-                    src={require(`../../assets/${randomNumber3}.png`)}
-                    alt={`Random Number ${randomNumber3}`}
-                  />
-                ) : (
-                  <p>Image not found</p>
-                )}
+            {displayImage && (
+              <RandomImgWrapper>
+                <div>
+                  {/* Display the first digit of the combined number 2 as an image */}
+                  {randomNumber3 !== null &&
+                  randomNumber3 >= 0 &&
+                  randomNumber3 <= 9 ? (
+                    <RandomImg
+                      src={require(`../../assets/${randomNumber3}.png`)}
+                      alt={`Random Number ${randomNumber3}`}
+                    />
+                  ) : (
+                    <p>Image not found</p>
+                  )}
 
-                {/* Display the second digit of the combined number 2 as an image */}
-                {randomNumber4 !== null &&
-                randomNumber4 >= 0 &&
-                randomNumber4 <= 9 ? (
-                  <RandomImg
-                    src={require(`../../assets/${randomNumber4}.png`)}
-                    alt={`Random Number ${randomNumber4}`}
-                  />
-                ) : (
-                  <p>Image not found</p>
-                )}
-              </div>
-            </RandomImgWrapper>
-          )}
-        </FrameWrapper>
+                  {/* Display the second digit of the combined number 2 as an image */}
+                  {randomNumber4 !== null &&
+                  randomNumber4 >= 0 &&
+                  randomNumber4 <= 9 ? (
+                    <RandomImg
+                      src={require(`../../assets/${randomNumber4}.png`)}
+                      alt={`Random Number ${randomNumber4}`}
+                    />
+                  ) : (
+                    <p>Image not found</p>
+                  )}
+                </div>
+              </RandomImgWrapper>
+            )}
+          </FrameWrapper>
+        </FrameSect>
       </LotteryWrapper>
       <Table tableData={firebaseData} />
       {/* Display the table component */}
