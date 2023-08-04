@@ -14,6 +14,8 @@ export const TableWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 40px;
 `;
 
 export const ResultTable = styled.table`
@@ -68,6 +70,7 @@ export const ResultTable = styled.table`
     max-width: 250px;
   }
 `;
+
 export const TableHeading = styled.thead``;
 
 export const TableRow = styled.tr`
@@ -134,6 +137,8 @@ export const PastDataWrapper = styled.div`
 
   @media (max-width: 521px) {
     margin-top: 30px;
+    flex-direction: column;
+    gap: 30px;
   }
 
   @media (max-width: 468px) {
@@ -164,10 +169,10 @@ export const PastDataButton = styled.button`
   }
 
   @media (max-width: 521px) {
-    font-size: 10px;
+    font-size: 13px;
   }
 
   @media (max-width: 420px) {
-    font-size: 8px;
+    font-size: 11px;
   }
 `;

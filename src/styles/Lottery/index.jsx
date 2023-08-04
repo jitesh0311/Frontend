@@ -29,6 +29,10 @@ export const FrameSect = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 export const DateTimeWrapper = styled.div`
@@ -44,8 +48,20 @@ export const DateWrapper = styled.div`
 `;
 
 export const DateHeading = styled.h1`
-  color: #fffefee6;
-  font-size: 60px;
+  color: white;
+  font-size: 80px;
+
+  @media (max-width: 859px) {
+    font-size: 60px;
+  }
+
+  @media (max-width: 561px) {
+    font-size: 50px;
+  }
+
+  @media (max-width: 408px) {
+    font-size: 40px;
+  }
 `;
 
 export const FrameWrapper = styled.div`

@@ -47,10 +47,7 @@ const AdminPanel = () => {
     const month = formattedDate.getMonth() + 1;
     const year = formattedDate.getFullYear();
 
-    return `${String(month).padStart(2)}/${String(day).padStart(
-      2,
-      "0"
-    )}/${year}`;
+    return `${String(month).padStart(1)}/${String(day).padStart(1)}/${year}`;
   };
 
   const [selectedResult1, setSelectedResult1] = useState("");
@@ -98,6 +95,8 @@ const AdminPanel = () => {
 
       // Format the selected date
       const formattedDate = formatDate(selectedDate);
+
+      console.log(typeof formattedDate);
 
       // Format the selected time
       const formattedTime = formatTime(selectedTime);

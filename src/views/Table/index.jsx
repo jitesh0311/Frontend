@@ -11,6 +11,7 @@ import {
   TableSect,
   TableWrapper,
 } from "../../styles/Table";
+// import Lottery from '../../views/Lottery/index'
 
 import { useNavigate } from "react-router-dom";
 
@@ -43,23 +44,24 @@ const Table = ({ tableData, actualTime }) => {
   const { allRandomNumbers1, allRandomNumbers2, updatedLotteryNumbers } =
     tableData;
 
-   const currentDate = new Date();
+  const currentDate = new Date();
 
-   const filterData1 = allRandomNumbers1.filter(
-     (data) => new Date(data.date).toDateString() === currentDate.toDateString()
-   );
+  const filterData1 = allRandomNumbers1.filter(
+    (data) => new Date(data.date).toDateString() === currentDate.toDateString()
+  );
 
-   // Step 3: Filter the data based on the current date for allRandomNumbers2
-   const filterData2 = allRandomNumbers2.filter(
-     (data) => new Date(data.date).toDateString() === currentDate.toDateString()
-   );
+  // Step 3: Filter the data based on the current date for allRandomNumbers2
+  const filterData2 = allRandomNumbers2.filter(
+    (data) => new Date(data.date).toDateString() === currentDate.toDateString()
+  );
 
-   const checkAdminSelect = (updatedLotteryNumbers, time) => {
-     // Implement your logic to check and return selected data
-     // For example:
-     return updatedLotteryNumbers.filter((item) => item.time === time);
-   };
-
+  const checkAdminSelect = (updatedLotteryNumbers, date, time) => {
+    // Implement your logic to check and return selected data
+    // For example:
+    return updatedLotteryNumbers.filter(
+      (item) => item.date === date && item.selectedTime === time
+    );
+  };
 
   function checkAdminSelected(arr, time) {
     let selectedArr = [];
@@ -113,9 +115,11 @@ const Table = ({ tableData, actualTime }) => {
   return (
     <TableSect>
       <TableWrapper>
+        {/* {console.log(updatedLotteryNumbers)} */}
         <ResultTable>
           {showTable && (
             <TableHeading>
+             
               <TableRow>
                 <ColumnNames>Date</ColumnNames>
                 <ColumnNames>Time</ColumnNames>
@@ -132,20 +136,32 @@ const Table = ({ tableData, actualTime }) => {
                   <TableData>{String(data1.date)}</TableData>
                   <TableData>{data1.time}</TableData>
                   <TableData>
-                    {checkAdminSelect(updatedLotteryNumbers, data1.time)
-                      .length === 0
+                    {checkAdminSelect(
+                      updatedLotteryNumbers,
+                      data1.date,
+                      data1.time
+                    ).length === 0
                       ? data1.number
-                      : checkAdminSelect(updatedLotteryNumbers, data1.time)[0]
-                          ?.number1}
+                      : checkAdminSelect(
+                          updatedLotteryNumbers,
+                          data1.date,
+                          data1.time
+                        )[0]?.number1}
                   </TableData>
                   {/* Display the data from allRandomNumbers2 */}
                   {filterData2[index] ? (
                     <TableData>
-                      {checkAdminSelect(updatedLotteryNumbers, data1.time)
-                        .length === 0
+                      {checkAdminSelect(
+                        updatedLotteryNumbers,
+                        data1.date,
+                        data1.time
+                      ).length === 0
                         ? filterData2[index]?.number
-                        : checkAdminSelect(updatedLotteryNumbers, data1.time)[0]
-                            ?.number2}
+                        : checkAdminSelect(
+                            updatedLotteryNumbers,
+                            data1.date,
+                            data1.time
+                          )[0]?.number2}
                     </TableData>
                   ) : (
                     <TableData>-</TableData>
@@ -174,19 +190,29 @@ const Table = ({ tableData, actualTime }) => {
                   <TableData>{String(data1.date)}</TableData>
                   <TableData>{data1.time}</TableData>
                   <TableData>
-                    {checkAdminSelected(updatedLotteryNumbers, data1.time)
-                      .length === 0
+                    {checkAdminSelected(
+                      updatedLotteryNumbers,
+                      data1.date,
+                      data1.time
+                    ).length === 0
                       ? data1.number
-                      : checkAdminSelected(updatedLotteryNumbers, data1.time)[0]
-                          ?.number1}
+                      : checkAdminSelected(
+                          updatedLotteryNumbers,
+                          data1.date,
+                          data1.time
+                        )[0]?.number1}
                   </TableData>
                   {allRandomNumbers2[index] ? (
                     <TableData>
-                      {checkAdminSelected(updatedLotteryNumbers, data1.time)
-                        .length === 0
+                      {checkAdminSelected(
+                        updatedLotteryNumbers,
+                        data1.date,
+                        data1.time
+                      ).length === 0
                         ? allRandomNumbers2[index]?.number
                         : checkAdminSelected(
                             updatedLotteryNumbers,
+                            data1.date,
                             data1.time
                           )[0]?.number2}
                     </TableData>
@@ -224,6 +250,7 @@ const Table = ({ tableData, actualTime }) => {
           </PastDataWrapper>
         </ResultTable>
       </TableWrapper>
+      {/* <Lottery PushAdminData = {updatedLotteryNumbers} /> */}
     </TableSect>
   );
 };

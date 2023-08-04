@@ -39,6 +39,11 @@ const Lottery = () => {
     updatedLotteryNumbers: [],
   });
 
+  const isWithinNineToNine = () => {
+    const currentHour = new Date().getHours();
+    return currentHour >= 9 && currentHour <= 21; // 21 is 9 pm in 24-hour format
+  };
+
   const fetchDataFromFirebase = () => {
     try {
       const unsubscribe1 = onValue(ref(db, "allRandomNumbers1"), (snapshot) => {
@@ -176,39 +181,44 @@ const Lottery = () => {
   // Function to generate new numbers and combine them
 
   const generateNewNumbers = () => {
-    const newRandomNumber1 = generateRandomNumber();
-    const newRandomNumber2 = generateRandomNumber();
-    const newRandomNumber3 = generateRandomNumber();
-    const newRandomNumber4 = generateRandomNumber();
+    if (isWithinNineToNine()) {
+      const newRandomNumber1 = generateRandomNumber();
+      const newRandomNumber2 = generateRandomNumber();
+      const newRandomNumber3 = generateRandomNumber();
+      const newRandomNumber4 = generateRandomNumber();
 
-    const newCombinedNumber1 = combineNumbers(
-      newRandomNumber1,
-      newRandomNumber2
-    );
-    const newCombinedNumber2 = combineNumbers(
-      newRandomNumber3,
-      newRandomNumber4
-    );
+      const newCombinedNumber1 = combineNumbers(
+        newRandomNumber1,
+        newRandomNumber2
+      );
+      const newCombinedNumber2 = combineNumbers(
+        newRandomNumber3,
+        newRandomNumber4
+      );
 
-    if (newCombinedNumber1 === newCombinedNumber2) {
-      // If they are the same, generate new numbers again
-      return generateNewNumbers();
+      if (newCombinedNumber1 === newCombinedNumber2) {
+        // If they are the same, generate new numbers again
+        return generateNewNumbers();
+      }
+
+      // If they are different, update the state variables with the new numbers
+      setRandomNumber1(newRandomNumber1);
+      setRandomNumber2(newRandomNumber2);
+      setRandomNumber3(newRandomNumber3);
+      setRandomNumber4(newRandomNumber4);
+      setCombinedNumber1(newCombinedNumber1);
+      setCombinedNumber2(newCombinedNumber2);
+
+      // Push the combined numbers to the database
+      pushCombinedNumber1ToDB(newCombinedNumber1);
+      pushCombinedNumber2ToDB(newCombinedNumber2);
+
+      // Save the current time as the last generated time
+      setLastGeneratedTime(new Date().getTime());
+    } else {
+      // If the current time is not within 9 am to 9 pm, do nothing
+      console.log("Numbers can only be generated between 9 am to 9 pm.");
     }
-
-    // If they are different, update the state variables with the new numbers
-    setRandomNumber1(newRandomNumber1);
-    setRandomNumber2(newRandomNumber2);
-    setRandomNumber3(newRandomNumber3);
-    setRandomNumber4(newRandomNumber4);
-    setCombinedNumber1(newCombinedNumber1);
-    setCombinedNumber2(newCombinedNumber2);
-
-    // Push the combined numbers to the database
-    pushCombinedNumber1ToDB(newCombinedNumber1);
-    pushCombinedNumber2ToDB(newCombinedNumber2);
-
-    // Save the current time as the last generated time
-    setLastGeneratedTime(new Date().getTime());
   };
 
   const updateNumbers = () => {
