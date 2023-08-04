@@ -226,12 +226,12 @@ const Table = ({ tableData, actualTime }) => {
           )}
           <PastDataWrapper>
             <PastDataButton onClick={handleCallResultsClick}>
-              Past Years Data
+              Annual Data
             </PastDataButton>
             {/* Use the handlePastDayDataClick function to hide the table */}
             {showTable ? (
               <PastDataButton onClick={handlePastDayDataClick}>
-                Past Day Data
+                Recent Data
               </PastDataButton>
             ) : (
               <>

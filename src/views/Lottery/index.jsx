@@ -304,6 +304,34 @@ const Lottery = () => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
+  const adminData = firebaseData.updatedLotteryNumbers;
+  const rand1 = firebaseData.allRandomNumbers1;
+  const rand2 = firebaseData.allRandomNumbers2;
+
+  const filterData1 = rand1.filter(
+    (data) => new Date(data.date).toDateString() === currentDate.toDateString()
+  );
+
+  // Step 3: Filter the data based on the current date for allRandomNumbers2
+  const filterData2 = rand2.filter(
+    (data) => new Date(data.date).toDateString() === currentDate.toDateString()
+  );
+  function firstNumber(number) {
+    return Math.floor(number / 10);
+  }
+
+  function secondNumber(number) {
+    return number % 10;
+  }
+
+  const checkAdminSelect = (adminData, date, time) => {
+    // Implement your logic to check and return selected data
+    // For example:
+    return adminData.filter(
+      (item) => item.date === date && item.selectedTime === time
+    );
+  };
+
   return (
     <LotterySect>
       <LotteryWrapper>
@@ -331,39 +359,59 @@ const Lottery = () => {
 
             {displayImage && (
               <RandomImgWrapper>
-                <div>
-                  {/* Display the first digit of the combined number 1 as an image */}
-                  {randomNumber1 !== null &&
-                  randomNumber1 >= 0 &&
-                  randomNumber1 <= 9 ? (
-                    <RandomImg
-                      src={require(`../../assets/${randomNumber1}.png`)}
-                      alt={`Random Number ${randomNumber1}`}
-                    />
-                  ) : (
-                    <p>Image not found</p>
-                  )}
-
-                  {/* Display the second digit of the combined number 1 as an image */}
-                  {randomNumber2 !== null &&
-                  randomNumber2 >= 0 &&
-                  randomNumber2 <= 9 ? (
-                    <RandomImg
-                      src={require(`../../assets/${randomNumber2}.png`)}
-                      alt={`Random Number ${randomNumber2}`}
-                    />
-                  ) : (
-                    <p>Image not found</p>
-                  )}
-                </div>
+                {/* Display the data from allRandomNumbers1 */}
+                {filterData1.slice(-1).map((data1, index) => (
+                  <FrameSect key={`resultRow_${index}`}>
+                    <div>
+                      {checkAdminSelect(adminData, data1.date, data1.time)
+                        .length === 0 ? (
+                        <>
+                          <RandomImg
+                            src={require(`../../assets/${firstNumber(
+                              data1.number
+                            )}.png`)}
+                          />
+                          <RandomImg
+                            src={require(`../../assets/${secondNumber(
+                              data1.number
+                            )}.png`)}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <RandomImg
+                            src={require(`../../assets/${firstNumber(
+                              checkAdminSelect(
+                                adminData,
+                                data1.date,
+                                data1.time
+                              )[0]?.number1
+                            )}.png`)}
+                          />
+                          <RandomImg
+                            src={require(`../../assets/${secondNumber(
+                              checkAdminSelect(
+                                adminData,
+                                data1.date,
+                                data1.time
+                              )[0]?.number1
+                            )}.png`)}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </FrameSect>
+                ))}
+                {/* Display the current time if it's not manually selected */}
               </RandomImgWrapper>
             )}
           </FrameWrapper>
           <FrameWrapper>
             <h1 style={{ color: "white", textAlign: "center" }}>
-              Bhutan <span style={{ color: "#D3D3D3" }}>Deluxe</span>
+              Bhutan <span style={{ color: "#C0C0C0" }}>Deluxe</span>
             </h1>
             <Frame src={ResultFrame} />
+
             {showImage && (
               <RollWrapper>
                 <RollUp src={RollUpImg} />
@@ -373,31 +421,55 @@ const Lottery = () => {
 
             {displayImage && (
               <RandomImgWrapper>
-                <div>
-                  {/* Display the first digit of the combined number 2 as an image */}
-                  {randomNumber3 !== null &&
-                  randomNumber3 >= 0 &&
-                  randomNumber3 <= 9 ? (
-                    <RandomImg
-                      src={require(`../../assets/${randomNumber3}.png`)}
-                      alt={`Random Number ${randomNumber3}`}
-                    />
-                  ) : (
-                    <p>Image not found</p>
-                  )}
-
-                  {/* Display the second digit of the combined number 2 as an image */}
-                  {randomNumber4 !== null &&
-                  randomNumber4 >= 0 &&
-                  randomNumber4 <= 9 ? (
-                    <RandomImg
-                      src={require(`../../assets/${randomNumber4}.png`)}
-                      alt={`Random Number ${randomNumber4}`}
-                    />
-                  ) : (
-                    <p>Image not found</p>
-                  )}
-                </div>
+                {/* Display the data from allRandomNumbers1 */}
+                {filterData2.slice(-1).map((data1, index) => (
+                  <div key={`resultRow_${index}`}>
+                    {/* Display the data from allRandomNumbers2 */}
+                    {filterData2[index] ? (
+                      <div>
+                        {checkAdminSelect(adminData, data1.date, data1.time)
+                          .length === 0 ? (
+                          <>
+                            <RandomImg
+                              src={require(`../../assets/${firstNumber(
+                                filterData2[index]?.number
+                              )}.png`)}
+                            />
+                            <RandomImg
+                              src={require(`../../assets/${secondNumber(
+                                filterData2[index]?.number
+                              )}.png`)}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <RandomImg
+                              src={require(`../../assets/${firstNumber(
+                                checkAdminSelect(
+                                  adminData,
+                                  data1.date,
+                                  data1.time
+                                )[0]?.number2
+                              )}.png`)}
+                            />
+                            <RandomImg
+                              src={require(`../../assets/${secondNumber(
+                                checkAdminSelect(
+                                  adminData,
+                                  data1.date,
+                                  data1.time
+                                )[0]?.number2
+                              )}.png`)}
+                            />
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <div>-</div>
+                    )}
+                  </div>
+                ))}
+                {/* Display the current time if it's not manually selected */}
               </RandomImgWrapper>
             )}
           </FrameWrapper>
