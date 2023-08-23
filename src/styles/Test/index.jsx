@@ -16,11 +16,154 @@ export const TableWrapper = styled.div`
   justify-content: center;
   flex-direction: column;
   gap: 40px;
+ 
+`;
+
+export const Top = styled.div`
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+export const Bottom = styled.div`
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+export const FrameWrapper = styled.div`
+    position: relative;
+    text-align: center;
+    
+`
+export const FrameNames = styled.h1`
+  color: white;
+  @media (max-width: 407px) {
+    font-size: 24px;
+  }
+`;
+
+
+export const Frame = styled.img`
+  width: 400px;
+
+  @media (max-width: 980px) {
+    width: 350px;
+  }
+
+  @media (max-width: 858px) {
+    width: 300px;
+  }
+
+  @media (max-width: 768px) {
+    width: 400px;
+  }
+
+  @media (max-width: 560px) {
+    width: 350px;
+  }
+
+  @media (max-width: 452px) {
+    width: 300px;
+  }
+
+  @media (max-width: 407px) {
+    width: 250px;
+  }
+
+  @media (max-width: 360px) {
+    width: 200px;
+  }
+`;
+
+export const NumberWrapper = styled.div`
+  position: absolute;
+  bottom: 85px;
+  left: 110px;
+  display: flex;
+  gap: 10px;
+
+  @media (max-width: 980px) {
+    left: 90px;
+    bottom: 75px;
+  }
+
+  @media (max-width: 858px) {
+    left: 80px;
+    bottom: 65px;
+  }
+
+  @media (max-width: 768px) {
+    left: 110px;
+    bottom: 85px;
+  }
+
+  @media (max-width: 560px) {
+    bottom: 80px;
+    left: 95px;
+  }
+
+  @media (max-width: 452px) {
+    bottom: 65px;
+    left: 80px;
+  }
+
+  @media (max-width: 407px) {
+    bottom: 60px;
+    left: 65px;
+  }
+
+  @media (max-width: 360px) {
+    bottom: 75px;
+    left: 50px;
+  }
+
+  @media (max-width: 360px) {
+    bottom: 45px;
+    left: 50px;
+  }
+`;
+export const Number = styled.img`
+  width: 90px;
+
+  @media (max-width: 980px) {
+    width: 85px;
+  }
+
+  @media (max-width: 858px) {
+    width: 75px;
+  }
+
+  @media (max-width: 768px) {
+    width: 90px;
+  }
+
+  @media (max-width: 560px) {
+    width: 80px;
+  }
+
+  @media (max-width: 452px) {
+    width: 70px;
+  }
+
+  @media (max-width: 407px) {
+    width: 60px;
+  }
+
+  @media (max-width: 360px) {
+    width: 50px;
+  }
 `;
 
 export const ResultTable = styled.table`
   width: 100%;
   max-width: 900px;
+
 
   @media (max-width: 990px) {
     max-width: 840px;
@@ -105,7 +248,9 @@ export const ColumnNames = styled.th`
   }
 `;
 
-export const TableBody = styled.tbody``;
+export const TableBody = styled.tbody`
+    
+`;
 export const TableData = styled.td`
   text-align: center;
   width: 100%;
@@ -176,3 +321,5 @@ export const PastDataButton = styled.button`
     font-size: 11px;
   }
 `;
+
+

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Hero = () => {
     const navigate = useNavigate();
     const handleCallResultsClick = () => {
-      navigate("/Lottery");
+      navigate("/Test");
     };
      const handleAdminLogin = () => {
        navigate("/Login");

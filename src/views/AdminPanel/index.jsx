@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import { ref, push } from "firebase/database";
-import { db } from "../../utils/firebase";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   AdminBottom,
   AdminBottomLeft,
@@ -18,15 +16,53 @@ import {
   TimeOption,
   TimeSelect,
 } from "../../styles/AdminPanel";
-
+import {
+  ColumnNames,
+  ResultTable,
+  TableBody,
+  TableData,
+  TableHeading,
+  TableRow,
+  TableSect,
+  TableWrapper,
+  Top,
+  Bottom,
+} from "../../styles/Test";
 const AdminPanel = () => {
+  const [data, setData] = useState([]);
+   const [formData, setFormData] = useState({
+     Date: "",
+     Time: "",
+     BhutanGold: 0,
+     BhutanDeluxe: 0,
+   });
+
+ useEffect(() => {
+   fetch("http://localhost:8081/showAdmin")
+     .then((res) => res.json())
+     .then((data) => {
+       setData(data);
+     })
+     .catch((error) => {
+       console.error("Error fetching data:", error);
+     });
+ }, []);
+
+    // const arrOuter = data[0];
+    const firstDataItem = data.length > 0 ? data : {};
+
+    // const arrInner = arrOuter[arrOuter.length - 1]
+
+  
+ 
+  // Generate an array of time options from 9:00 AM to 9:00 PM with a gap of 15 minutes
   const numberOptions = Array.from({ length: 100 }, (_, index) => index);
 
   const generateTimeOptions = () => {
     const timeOptions = [];
     const gap = 15; // Gap in minutes
 
-    for (let hours = 0; hours < 24; hours++) {
+    for (let hours = 9; hours <= 21; hours++) {
       for (let minutes = 0; minutes < 60; minutes += gap) {
         const ampm = hours >= 12 ? "PM" : "AM";
         const formattedHours = hours % 12 || 12; // Convert 0 to 12
@@ -47,28 +83,10 @@ const AdminPanel = () => {
     const month = formattedDate.getMonth() + 1;
     const year = formattedDate.getFullYear();
 
-    return `${String(month).padStart(1)}/${String(day).padStart(1)}/${year}`;
-  };
+    const formattedDay = day < 10 ? "0" + day : day;
+    const formattedMonth = month < 10 ? "0" + month : month;
 
-  const [selectedResult1, setSelectedResult1] = useState("");
-  const [selectedResult2, setSelectedResult2] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-
-  const handleResult1Change = (event) => {
-    setSelectedResult1(event.target.value);
-  };
-
-  const handleResult2Change = (event) => {
-    setSelectedResult2(event.target.value);
-  };
-
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
-
-  const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);
+    return `${String(formattedDay)}/${String(formattedMonth)}/${year}`;
   };
 
   const formatTime = (time) => {
@@ -78,132 +96,162 @@ const AdminPanel = () => {
       minute: "2-digit",
       hour12: true,
     });
-
-    console.log("formattedTime", formattedTime);
     return formattedTime;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      selectedResult1 !== "" &&
-      selectedResult2 !== "" &&
-      selectedDate !== "" &&
-      selectedTime !== ""
-    ) {
-      const timestamp = new Date().toISOString();
+    const submitedDate = formatDate(formData.Date);
+    const submitedTime = formData.Time;
+    const Number1 = parseInt(formData.BhutanGold);
+    const Number2 = parseInt(formData.BhutanDeluxe);
 
-      // Format the selected date
-      const formattedDate = formatDate(selectedDate);
+    const requestData = {
+      Date: submitedDate,
+      Time: submitedTime,
+      BhutanGold: Number1,
+      BhutanDeluxe: Number2,
+    };
 
-      console.log(typeof formattedDate);
+    try {
+     // Added console log
 
-      // Format the selected time
-      const formattedTime = formatTime(selectedTime);
+      const response = await axios.post(
+        "http://localhost:8081/update",
+        JSON.stringify(requestData),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      console.log("formattedTime", formattedTime);
-      console.log("selectedTime", selectedTime);
+      console.log("Response:", response.data);
 
-      // Push the selected numbers, timestamp, and time to the respective Firebase database references
-      push(ref(db, "updatedLotteryNumbers"), {
-        number1: selectedResult1,
-        number2: selectedResult2,
-        date: formattedDate,
-        selectedTime,
-        time: formattedTime, // Use the formatted time without seconds
-      });
-
-      // push(ref(db, "allRandomNumbers2"), {
-      //   number: selectedResult2,
-      //   time: formattedTime, // Use the formatted time without seconds
-      //   date: formattedDate,
-      //   selectedTime,
-      // });
-
-      // Reset the selected values to empty strings
-      setSelectedResult1("");
-      setSelectedResult2("");
-      setSelectedDate("");
-      setSelectedTime("");
+      if (response.status === 200) {
+        console.log("Data updated successfully");
+      } else {
+        console.log("Data not updated");
+      }
+    } catch (error) {
+      console.log("Error:", error.message);
     }
   };
 
-  const navigate = useNavigate();
-
-  const handleCallResultsClick = () => {
-    navigate("/Lottery");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
+
   return (
-    <AdminSection>
-      <AdminWrap>
-        <AdminForm>
-          <AdminFormWrapper>
-            <AdminHeadingWrapper>
-              <AdminHeading>Admin</AdminHeading>
-            </AdminHeadingWrapper>
-            <AdminBottom>
-              <AdminBottomLeft>
-                <DateLabel>Select a Date</DateLabel>
-                <DateInput
-                  type="date"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                />
-              </AdminBottomLeft>
-              <AdminBottomLeft>
-                <DateLabel>Select Time</DateLabel>
-                <TimeSelect value={selectedTime} onChange={handleTimeChange}>
-                  <TimeOption disabled value="">
-                    Select
-                  </TimeOption>
-                  {timeOptions.map((time) => (
-                    <TimeOption key={time} value={time}>
-                      {time}
-                    </TimeOption>
-                  ))}
-                </TimeSelect>
-              </AdminBottomLeft>
-              <AdminBottomLeft>
-                <DateLabel>Result 1</DateLabel>
-                <TimeSelect
-                  value={selectedResult1}
-                  onChange={handleResult1Change}
-                >
-                  <TimeOption disabled value="">
-                    Select
-                  </TimeOption>
-                  {numberOptions.map((number) => (
-                    <TimeOption key={number} value={number}>
-                      {number}
-                    </TimeOption>
-                  ))}
-                </TimeSelect>
-              </AdminBottomLeft>
-              <AdminBottomLeft>
-                <DateLabel>Result 2</DateLabel>
-                <TimeSelect
-                  value={selectedResult2}
-                  onChange={handleResult2Change}
-                >
-                  <TimeOption disabled value="">
-                    Select
-                  </TimeOption>
-                  {numberOptions.map((number) => (
-                    <TimeOption key={number} value={number}>
-                      {number}
-                    </TimeOption>
-                  ))}
-                </TimeSelect>
-              </AdminBottomLeft>
-              <SubmitButtonWrap>
-                <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
-              </SubmitButtonWrap>
-            </AdminBottom>
-          </AdminFormWrapper>
-        </AdminForm>
-      </AdminWrap>
-    </AdminSection>
+    <TableSect>
+      <TableWrapper>
+        {firstDataItem.length > 0 && (
+        <Top>
+          <ResultTable>
+            <TableHeading>
+              <TableRow>
+                <ColumnNames>Date</ColumnNames>
+                <ColumnNames>Time</ColumnNames>
+                <ColumnNames>Bhutan Gold</ColumnNames>
+                <ColumnNames>Bhutan Deluxe</ColumnNames>
+              </TableRow>
+            </TableHeading>
+            <TableBody>
+              {firstDataItem.map((d, i) => (
+                <TableRow key={i}>
+                  <TableData>{d.Date}</TableData>
+                  <TableData>{d.Time}</TableData>
+                  <TableData>{d.BhutanGold}</TableData>
+                  <TableData>{d.BhutanDeluxe}</TableData>  
+                </TableRow>
+              ))}
+            </TableBody>
+          </ResultTable>
+        </Top>
+        )}
+        <Bottom>
+          <AdminSection>
+            <AdminWrap>
+              <AdminForm>
+                <AdminFormWrapper>
+                  <AdminHeadingWrapper>
+                    <AdminHeading>Admin</AdminHeading>
+                  </AdminHeadingWrapper>
+                  <AdminBottom>
+                    <AdminBottomLeft>
+                      <DateLabel>Select a Date</DateLabel>
+                      <DateInput
+                        type="date"
+                        name="Date"
+                        value={formData.Date}
+                        onChange={handleInputChange}
+                      />
+                    </AdminBottomLeft>
+                    <AdminBottomLeft>
+                      <DateLabel>Select Time</DateLabel>
+                      <TimeSelect
+                        name="Time"
+                        value={formData.Time}
+                        onChange={handleInputChange}
+                      >
+                        <TimeOption disabled value="">
+                          Select
+                        </TimeOption>
+                        {timeOptions.map((time) => (
+                          <TimeOption key={time} value={time}>
+                            {time}
+                          </TimeOption>
+                        ))}
+                      </TimeSelect>
+                    </AdminBottomLeft>
+                    <AdminBottomLeft>
+                      <DateLabel>Result 1</DateLabel>
+                      <TimeSelect
+                        name="BhutanGold"
+                        onChange={handleInputChange}
+                      >
+                        <TimeOption disabled value={formData.BhutanGold}>
+                          Select
+                        </TimeOption>
+                        {numberOptions.map((number) => (
+                          <TimeOption key={number} value={number}>
+                            {number}
+                          </TimeOption>
+                        ))}
+                      </TimeSelect>
+                    </AdminBottomLeft>
+                    <AdminBottomLeft>
+                      <DateLabel>Result 2</DateLabel>
+                      <TimeSelect
+                        name="BhutanDeluxe"
+                        onChange={handleInputChange}
+                      >
+                        <TimeOption disabled value={formData.BhutanDeluxe}>
+                          Select
+                        </TimeOption>
+                        {numberOptions.map((number) => (
+                          <TimeOption key={number} value={number}>
+                            {number}
+                          </TimeOption>
+                        ))}
+                      </TimeSelect>
+                    </AdminBottomLeft>
+                    <SubmitButtonWrap>
+                      <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+                    </SubmitButtonWrap>
+                  </AdminBottom>
+                </AdminFormWrapper>
+              </AdminForm>
+            </AdminWrap>
+          </AdminSection>
+        </Bottom>
+      </TableWrapper>
+    </TableSect>
   );
 };
 

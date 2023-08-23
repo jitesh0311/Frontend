@@ -1,7 +1,8 @@
 {
-  "name": "random-number",
   "version": "0.1.0",
   "private": true,
+  "name": "Bhutanxpro",
+  "domain": "localhost:3000",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -10,9 +11,11 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.4.0",
     "date-fns": "^2.30.0",
     "file-saver": "^2.0.5",
     "firebase": "^10.1.0",
+    "fs": "^0.0.1-security",
     "moment": "^2.29.4",
     "package-name": "^0.1.0",
     "papaparse": "^5.4.1",
@@ -24,8 +27,10 @@
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
+    "socket.io-client": "^4.7.2",
     "styled-components": "^6.0.4",
     "web-vitals": "^2.1.4",
+    "websocket": "^1.0.34",
     "yup": "^1.2.0"
   },
   "scripts": {

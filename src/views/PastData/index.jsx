@@ -20,6 +20,13 @@ const PastData = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [csvData, setCsvData] = useState([]);
 
+  // Get the current date in the "YYYY-MM-DD" format
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 1);
+  const formattedDate = currentDate.toISOString().split("T")[0];
+
+  
+
   // Function to handle date selection
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
@@ -27,7 +34,7 @@ const PastData = () => {
 
   // Fetch CSV data from the file
   useEffect(() => {
-    fetch("/random.csv") // Replace 'data.csv' with the actual name of your CSV file
+    fetch("/BhutanData.csv")
       .then((response) => response.text())
       .then((data) => {
         const parsedData = Papa.parse(data, { header: true }).data;
@@ -52,7 +59,7 @@ const PastData = () => {
           <DateInput
             type="date"
             min="2021-07-20"
-            max="2023-07-27"
+            max={formattedDate} // Set the max attribute to the current date
             onChange={handleDateChange}
             value={selectedDate}
           />
@@ -63,8 +70,8 @@ const PastData = () => {
               <TableRow>
                 <ColumnNames>Date</ColumnNames>
                 <ColumnNames>Time</ColumnNames>
-                <ColumnNames>Result1</ColumnNames>
-                <ColumnNames>Result2</ColumnNames>
+                <ColumnNames>Bhutan Gold</ColumnNames>
+                <ColumnNames>Bhutan Deluxe</ColumnNames>
               </TableRow>
             </TableHeading>
 

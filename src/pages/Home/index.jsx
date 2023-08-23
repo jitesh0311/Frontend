@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import Header from "../../components/Header";
 import Hero from "../../views/Hero";
-import Lottery from "../../views/Lottery";
-import Table from "../../views/Table";
+import Test from "../../views/Test";
+
 
 const Home = () => {
   const Container = styled.div`
@@ -17,8 +17,7 @@ const Home = () => {
     <Container>
       <Header />
       <Hero />
-      <Lottery />
-      <Table />
+      <Test />
     </Container>
   );
 };
